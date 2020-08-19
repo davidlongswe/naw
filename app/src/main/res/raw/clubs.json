@@ -1,0 +1,227 @@
+{
+"clubs": [
+  {
+    "link":"https://www.budokampsport.se/klubbar/arvidsjaur-armsport-ik",
+    "name":"Arvidsjaur Armsport Idrottsklubb",
+    "latitude": "65.5977226", "longitude":"19.164306399999987",
+    "address":"Klingsporvägen 11, Arvidsjaur, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/blue-lake-armsport",
+    "name":"Blue-Lake Armsport IF",
+    "latitude":"64.83507283807765",
+    "longitude":"14.07803785820306",
+    "address":"819, 830 93 Stora Blåsjön, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/drakbrytarnas-idrottsforening",
+    "name":"Drakbrytarnas Idrottsförening",
+    "latitude":"62.390811",
+    "longitude":"17.306926999999973",
+    "address":"Sundsvall, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/ekero-idrottsklubb",
+    "name":"Ekerö Idrottsklubb",
+    "latitude":"59.28281430000001",
+    "longitude":"17.80346659999998",
+    "address":"Ekebyhovskolans gymnastiksal, Björkuddsvägen 98, 178 34 Ekerö"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/falkenbergs-armsportklubb",
+    "name":"Falkenbergs Armsportklubb",
+    "latitude":"56.9069639",
+    "longitude":"12.507828600000039",
+    "address":"Kyrkovägen 10, Falkenberg, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/flen-sport-halsa-idrottsforening",
+    "name":"Flen Sport &#038; Hälsa Idrottsförening",
+    "latitude":"59.0579376",
+    "longitude":"16.587912200000005",
+    "address":"Flen, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/foreningen-brynas-armwrestling",
+    "name":"Föreningen Brynäs Armwrestling",
+    "latitude":"60.66842889999999",
+    "longitude":"17.26344800000004",
+    "address":"Transtråket 51, Gävle, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/foreningen-dalabrytarna",
+    "name":"Föreningen Dalabrytarna",
+    "latitude":"60.1431933",
+    "longitude":"15.415991500000018",
+    "address":"Smedjebacken, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/foreningen-flens-armfighters",
+    "name":"Föreningen Flens Armfighters",
+    "latitude":"67.570754",
+    "longitude":"4.5819503",
+    "address":"Adress saknas"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/foreningen-goteborg-armsport",
+    "name":"Föreningen Göteborg Armsport",
+    "latitude":"57.6618984",
+    "longitude":"11.9165908",
+    "address":"Klarinettgatan 9, 421 39 ra Frölunda"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/foreningen-northern-arms",
+    "name":"Föreningen Northern Arms",
+    "latitude":"66.04169519999999",
+    "longitude":"17.872324400000025",
+    "address":"Daghemsvägen 6H, Arjeplog, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/foreningen-storuman-armsport-lappmarken",
+    "name":"Föreningen Storuman Armsport Lappmarken",
+    "latitude":"65.09623221238198",
+    "longitude":"17.1151978419922",
+    "address":"Skolgatan 23, 923 31 Storuman, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/foreningen-strombrytarna",
+    "name":"Föreningen Strömbrytarna",
+    "latitude":"63.85366209999999",
+    "longitude":"15.556869099999972",
+    "address":"Strömsund, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/foreningen-trollhattans-armsport",
+    "name":"Föreningen Trollhättans Armsport",
+    "latitude":"58.28348939999999",
+    "longitude":"12.285820599999965",
+    "address":"Trollhättan, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/fransta-armsport-klubb",
+    "name":"Fränsta Armsport Klubb",
+    "latitude":"62.49792",
+    "longitude":"16.169478",
+    "address":"840 12 Fränsta, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/fyshuset-sport-klubb-gefle",
+    "name":"Fyshuset Sport Klubb Gefle",
+    "latitude":"60.6748796",
+    "longitude":"17.14127259999998",
+    "address":"Gävle, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/halsingland-arms-if",
+    "name":"Hälsingland Arms IF",
+    "latitude":"61.2299391 ",
+    "longitude":"16.5635885",
+    "address":"823 30 Kilafors, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/hammarby-if-armbrytarforening",
+    "name":"Hammarby IF Armbrytarförening",
+    "latitude":"59.30091909999999",
+    "longitude":"18.090148699999986",
+    "address":"Fryshuset (Danssal 4) Mårtendalsgatan 2-8 Stockholm"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/hedemora-armsports-klubb",
+    "name":"Hedemora Armsports Klubb",
+    "latitude":"60.3976975",
+    "longitude":"15.999280799999951",
+    "address":"Klippanvägen 12, Dala Husby"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/iron-arms-wexio-if",
+    "name":"Iron Arms Wexio IF",
+    "latitude":"57.0630533",
+    "longitude":"15.06270429999995",
+    "address":"Smedjegatan 12, Braås, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/jonkoping-armbrytarklubb",
+    "name":"Jönköping Armbrytarklubb",
+    "latitude":"57.709319",
+    "longitude":"14.32485220000001",
+    "address":"nergårdsvägen 14 560 30 tenhult"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/lycksele-armfighters-club-hos-trim-365",
+    "name":"Lycksele Armfighters Club hos Trim 365",
+    "latitude":"64.5958098",
+    "longitude":"18.676366899999948",
+    "address":"Lycksele, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/nora-atletklubb-2",
+    "name":"Nora Atletklubb",
+    "latitude":"59.50610959999999",
+    "longitude":"15.02126450000003",
+    "address":"Industrigatan 1, 71330 Nora"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/ornskoldsviks-atletklubb",
+    "name":"Örnsköldsviks Atletklubb",
+    "latitude":"63.26090649999999",
+    "longitude":"18.697362500000054",
+    "address":"Hammarvägen 18, Domsjö, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/rauk-arm-storsudrets-armbrytarklubb",
+    "name":"Rauk Arm &#8211; Storsudrets Armbrytarklubb",
+    "latitude":"57.0363689",
+    "longitude":"18.30085299999996",
+    "address":"Gotland, Öja, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/skanninge-armbrytarklubb",
+    "name":"Skänninge Armbrytarklubb",
+    "latitude":"58.3954378",
+    "longitude":"15.086218899999949",
+    "address":"Källarlokal vid Dackeskolan"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/storsjobrytarna-armbrytarklubb",
+    "name":"Storsjöbrytarna Armbrytarklubb",
+    "latitude":"63.16867029999999",
+    "longitude":"14.642934299999979",
+    "address":"Bangårdsgatan 11 831 34 ersund"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/studentidrotten-i-lulea",
+    "name":"Studentidrotten i Luleå",
+    "latitude":"65.6182832",
+    "longitude":"22.14481939999996",
+    "address":"Universitetsvägen 11c 977 54 LULEÅ "
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/svanskogs-if",
+    "name":" Svanskogs IF",
+    "latitude":"59.17884919999999",
+    "longitude":"12.551601399999981",
+    "address":"Svanskog, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/117886",
+    "name":"Tassbrottarna ArmBrytningsKlubb",
+    "latitude":"59.136488",
+    "longitude":"15.3391517",
+    "address":"697 74 Sköllersta, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/vatternbrytarna-motala-armbrytarklubb",
+    "name":"Vätternbrytarna Motala Armbrytarklubb",
+    "latitude":"58.55012819999999",
+    "longitude":"15.035854299999983",
+    "address":"Styvingevägen 18d, Motala, Sverige"
+  },
+  {
+    "link":"https://www.budokampsport.se/klubbar/viking-kraftsport-if",
+    "name":"Viking Kraftsport IF",
+    "latitude":"63.8258471",
+    "longitude":"20.263035400000035",
+    "address":"Umeå, Sverige"
+  }
+]
+}

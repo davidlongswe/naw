@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "832837798320",
+    "firebase_url": "https://mobappupp3.firebaseio.com",
+    "project_id": "mobappupp3",
+    "storage_bucket": "mobappupp3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:832837798320:android:58061b07d6bb20d0fcee75",
+        "android_client_info": {
+          "package_name": "com.umu.se.dalo0013.naw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "832837798320-gkb6ut0eu24chp8gn33ag36hpds7nltq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApkYXJFnHKCExjx4SqfODs1KvVIsNo5po"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "832837798320-gkb6ut0eu24chp8gn33ag36hpds7nltq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

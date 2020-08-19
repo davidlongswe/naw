@@ -1,0 +1,86 @@
+<resources>
+    <string name="app_name">NAW</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_text">log in</string>
+    <string name="or_text">Or</string>
+    <string name="create_acc_text">Create Account</string>
+    <string name="username_hint">Username</string>
+    <string name="menu_title">Add thoughts</string>
+    <string name="signout">Signout</string>
+    <string name="no_thoughts_hint">Write a journal entry by clicking "+" icon</string>
+    <string name="join_text">JOIN</string>
+    <string name="save">SAVE</string>
+    <string name="date_of_birth">Date of birth:</string>
+    <string name="weight_class">Weight class:</string>
+    <string name="default_username">David Elfving Long</string>
+    <string name="default_last_updated">Last updated:</string>
+    <string name="sex_cont_desc">users sex</string>
+    <string name="user_sex_text">Sex</string>
+    <string name="default_user_sex_text">Male</string>
+    <string name="height_cont_desc">user height image</string>
+    <string name="user_height">Height</string>
+    <string name="default_user_height">184 cm</string>
+    <string name="measurement_symbol">measurement symbol</string>
+    <string name="forearm_size">Forearm size</string>
+    <string name="default_user_forearm_size">34 cm</string>
+    <string name="bicep_size_text">Bicep size</string>
+    <string name="default_bicep_size">43 cm</string>
+    <string name="weight_cont_desc">user weight symbol</string>
+    <string name="weight_class_text">Weight class</string>
+    <string name="default_user_weight">100 kg</string>
+    <string name="hometown_cont_desc">user location marker</string>
+    <string name="hometown_text">Hometown</string>
+    <string name="default_hometown_text">Örnsköldsvik</string>
+    <string name="height_cm">Height (cm)</string>
+    <string name="sex_hint">Sex</string>
+    <string name="forearm_size_cm">Forearm size (cm)</string>
+    <string name="hometown_hint">Hometown</string>
+    <string name="bicep_size_text_cm">Bicep size (cm)</string>
+    <string name="default_bio">GRIP AND RIP!</string>
+    <string name="enter_bio_text">Say something about yourself..</string>
+    <string name="profile_menu_text">Profile</string>
+    <string name="home_menu_text">Home</string>
+    <string name="edit_profile">Edit</string>
+    <string name="player_error">Error initializing YouTube player: %s</string>
+    <string name="seek_to">Jump To</string>
+    <string name="seek_to_hint">Seconds</string>
+    <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
+    <string name="find_a_partner">Find a partner</string>
+    <string name="videos">Videos</string>
+    <string name="homepage_slogan">Learn how to armwrestle \n and find armwrestlers\n in your area!</string>
+    <string name="popular_videos">Popular videos</string>
+    <string name="tutorial_videos">Tutorial videos</string>
+    <string name="popular_youtube_channels">Popular YouTube channels</string>
+
+    <string-array name="weight_classes">
+        <item>Female weight classes</item>
+        <item>0-50 kg</item>
+        <item>55 kg</item>
+        <item>60 kg</item>
+        <item>65 kg</item>
+        <item>70 kg</item>
+        <item>80 kg</item>
+        <item>+80 kg</item>
+        <item>Male weight classes</item>
+        <item>0-55 kg</item>
+        <item>60 kg</item>
+        <item>65 kg</item>
+        <item>70 kg</item>
+        <item>75 kg</item>
+        <item>80 kg</item>
+        <item>85 kg</item>
+        <item>90 kg</item>
+        <item>100 kg</item>
+        <item>110 kg</item>
+        <item>+110 kg</item>
+    </string-array>
+
+    <string-array name="sexes">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+    </string-array>
+    <string name="title_activity_find_partner">Map</string>
+    <string name="menu_search">Search</string>
+</resources>
