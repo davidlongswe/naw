@@ -183,10 +183,11 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                         + "Forearm: " + user.getForearmSize() + " cm" + "\n"
                         + "Bicep: " + user.getBicepSize() + " cm" + "\n"
                         + "Weight class: " + user.getWeightClass();
+
                 mMap.addMarker(new MarkerOptions()
                         .position(userLatLng)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                        .title(userInfo).snippet(user.getProfilePictureUrl().toString()));
+                        .title(userInfo).snippet(user.getProfilePictureUrl()));
             }
             usersShowing = true;
         } else {
@@ -208,7 +209,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         setCameraBounds();
-        mMap.setInfoWindowAdapter(new CustomInfoWindow(this));
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
         if (ActivityCompat.checkSelfPermission(this,
@@ -238,14 +238,19 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if(usersShowing && !clubsShowing){
+            mMap.setInfoWindowAdapter(new CustomInfoWindow(this));
+        }else{
+            mMap.setInfoWindowAdapter(null);
+        }
         return false;
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
+
         if(marker.getSnippet() != null) {
-            //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
-            Toast.makeText(this, "user clicked" + currentUser.getPhotoUrl(), Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
         }else{
             Toast.makeText(this, "user clicked", Toast.LENGTH_SHORT).show();
         }
