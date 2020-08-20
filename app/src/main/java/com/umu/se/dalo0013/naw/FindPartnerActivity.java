@@ -136,6 +136,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     private void toggleArmWrestlingClubs() {
         if(clubButtonPressed && !clubsShowing) {
+            mMap.setInfoWindowAdapter(null);
             for (ArmwrestlingClub club : armWrestlingClubs) {
                 double clubLat = Double.parseDouble(club.getClubLocLatitude());
                 double clubLong = Double.parseDouble(club.getClubLocLongitude());
@@ -151,6 +152,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         }else{
             mMap.clear();
             clubsShowing = false;
+            usersShowing = false;
         }
     }
     private void getUsers(){
@@ -173,6 +175,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     private void toggleUsersShown() {
         if (usersButtonPressed && !usersShowing) {
+            mMap.setInfoWindowAdapter(new CustomInfoWindow(this));
             for (UserProfile user : users) {
                 Double userLatitude = user.getUserLatLng().getLatitude();
                 Double userLongitude = user.getUserLatLng().getLongitude();
@@ -183,7 +186,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                         + "Forearm: " + user.getForearmSize() + " cm" + "\n"
                         + "Bicep: " + user.getBicepSize() + " cm" + "\n"
                         + "Weight class: " + user.getWeightClass();
-
                 mMap.addMarker(new MarkerOptions()
                         .position(userLatLng)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
@@ -193,6 +195,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         } else {
             mMap.clear();
             usersShowing = false;
+            clubsShowing = false;
         }
     }
 
@@ -238,21 +241,15 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if(usersShowing && !clubsShowing){
-            mMap.setInfoWindowAdapter(new CustomInfoWindow(this));
-        }else{
-            mMap.setInfoWindowAdapter(null);
-        }
-        return false;
+       return false;
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-
-        if(marker.getSnippet() != null) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
-        }else{
+        if(usersShowing && !clubsShowing){
             Toast.makeText(this, "user clicked", Toast.LENGTH_SHORT).show();
+        }else if((clubsShowing && !usersShowing)){
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
         }
     }
 
