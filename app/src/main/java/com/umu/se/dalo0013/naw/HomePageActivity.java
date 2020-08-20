@@ -66,8 +66,8 @@ public class HomePageActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.action_home:
                 if(currentUser != null && firebaseAuth != null){
-                    startActivity(new Intent(HomePageActivity.this, HomePageActivity.class));
                     finish();
+                    startActivity(getIntent());
                 }
                 break;
             case R.id.action_find_partner:

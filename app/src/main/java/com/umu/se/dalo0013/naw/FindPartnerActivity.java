@@ -320,8 +320,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 break;
             case R.id.action_find_partner:
                 if(currentUser != null && firebaseAuth != null){
-                    startActivity(new Intent(FindPartnerActivity.this, FindPartnerActivity.class));
                     finish();
+                    startActivity(getIntent());
                 }
                 break;
             case R.id.action_profile:
