@@ -4,7 +4,7 @@
     <string name="password_hint">Password</string>
     <string name="login_text">log in</string>
     <string name="or_text">Or</string>
-    <string name="create_acc_text">Create Account</string>
+    <string name="create_acc_text">Create account</string>
     <string name="username_hint">Username</string>
     <string name="menu_title">Add thoughts</string>
     <string name="signout">Signout</string>
@@ -35,7 +35,7 @@
     <string name="height_cm">Height (cm)</string>
     <string name="sex_hint">Sex</string>
     <string name="forearm_size_cm">Forearm size (cm)</string>
-    <string name="hometown_hint">Hometown</string>
+    <string name="hometown_hint">Hometown </string>
     <string name="bicep_size_text_cm">Bicep size (cm)</string>
     <string name="default_bio">GRIP AND RIP!</string>
     <string name="enter_bio_text">Say something about yourself..</string>
@@ -85,4 +85,8 @@
     <string name="menu_search">Search</string>
     <string name="Users">Users</string>
     <string name="Clubs">Clubs</string>
+    <string name="new_user_text">New user?</string>
+    <string name="logo_text">logo</string>
+    <string name="select_photo_text">Select photo</string>
+    <string name="add_photo_text_view">Add photo</string>
 </resources>

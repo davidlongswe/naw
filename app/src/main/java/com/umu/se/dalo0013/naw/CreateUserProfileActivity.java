@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,6 +30,7 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,7 +54,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
 
     private static final String TAG = "CreateUserProfileActivity";
     //view elements
-    private TextView userName;
+    private TextView userName, addProfilePhotoTextView;
     private LatLng userLocation;
     private EditText heightEditText,
         forearmEditText,
@@ -97,10 +100,10 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
 
         userBioEditText = findViewById(R.id.user_bio_profile_create);
         userName = findViewById(R.id.create_profile_username);
+        addProfilePhotoTextView = findViewById(R.id.add_photo_text_view);
         heightEditText = findViewById(R.id.height_text_view_profile_creation);
         forearmEditText = findViewById(R.id.forearm_size_edit_text);
         bicepEditText = findViewById(R.id.bicep_size_edit_text);
-        //hometownEditText = findViewById(R.id.hometown_edit_text);
         profileCreationProgressBar = findViewById(R.id.profile_creation_progress_bar);
         saveButton = findViewById(R.id.create_acc_save_button);
         profilePictureButton = findViewById(R.id.profile_picture_button);
@@ -146,14 +149,15 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
 
         // Specify the types of place data to return.
         assert autocompleteFragment != null;
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,
+                Place.Field.LAT_LNG));
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
-                userLocation = new LatLng(Objects.requireNonNull(place.getLatLng()).latitude, place.getLatLng().longitude);
-                Log.d(TAG, "onPlaceSelected: " + userLocation);
+                userLocation = new LatLng(Objects.requireNonNull(place.getLatLng()).latitude,
+                        place.getLatLng().longitude);
                 homeTown = place.getName();
             }
 
@@ -225,25 +229,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                             collectionReference.document(user.getUid()).set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    ObjectAnimator animation = ObjectAnimator.ofInt(profileCreationProgressBar,
-                                            "progress",
-                                            0, 100);
-                                    animation.setDuration(5000);
-                                    animation.setInterpolator(new DecelerateInterpolator());
-                                    animation.addListener(new Animator.AnimatorListener() {
-                                        @Override
-                                        public void onAnimationStart(Animator animator) { }
-
-                                        @Override
-                                        public void onAnimationEnd(Animator animator) {
-                                            profileCreationProgressBar.setVisibility(View.INVISIBLE);
-                                        }
-                                        @Override
-                                        public void onAnimationCancel(Animator animator) { }
-                                        @Override
-                                        public void onAnimationRepeat(Animator animator) { }
-                                    });
-                                    animation.start();
+                                    prolongProgressbarAnimation();
                                     startActivity(new Intent(CreateUserProfileActivity.this, HomePageActivity.class));
                                     finish();
                                 }
@@ -263,19 +249,79 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                 }
             });
         }else{
+            warnUserOfEmptyFields(userBio, userSex,
+                    userHeight, userForearmSize,
+                    userBicepSize, userWeightClass, homeTown, imageUri);
             profileCreationProgressBar.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void warnUserOfEmptyFields(String userBio, String userSex, String userHeight,
+                                  String userForearmSize, String userBicepSize,
+                                  String userWeightClass, String homeTown, Uri imageUri){
+        String required = "Required field";
+        if(TextUtils.isEmpty(userBio)){
+            userBioEditText.setError(required);
+        }
+        if(TextUtils.isEmpty(userSex)){
+            TextView sexErrorText = (TextView)userSexSpinner.getSelectedView();
+            sexErrorText.setError("");
+            sexErrorText.setTextColor(Color.RED);
+            sexErrorText.setText("Please choose sex!");
+        }
+        if(TextUtils.isEmpty(userHeight)){
+            heightEditText.setError(required);
+        }
+        if(TextUtils.isEmpty(userForearmSize)){
+            forearmEditText.setError(required);
+        }
+        if(TextUtils.isEmpty(userBicepSize)){
+            bicepEditText.setError(required);
+        }
+        if(TextUtils.isEmpty(userWeightClass)){
+            TextView weightErrorText = (TextView)weightClassSpinner.getSelectedView();
+            weightErrorText.setError("");
+            weightErrorText.setTextColor(Color.RED);
+            weightErrorText.setText("Please choose a weight class!");
+        }
+        if(homeTown == null){
+            Toast.makeText(this, "Please enter your hometown", Toast.LENGTH_SHORT).show();
+        }
+        if(imageUri == null){
+            addProfilePhotoTextView.setTextColor(Color.RED);
+        }
+    }
+
+    private void prolongProgressbarAnimation(){
+        ObjectAnimator animation = ObjectAnimator.ofInt(profileCreationProgressBar,
+                "progress",
+                0, 100);
+        animation.setDuration(5000);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) { }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                profileCreationProgressBar.setVisibility(View.INVISIBLE);
+            }
+            @Override
+            public void onAnimationCancel(Animator animator) { }
+            @Override
+            public void onAnimationRepeat(Animator animator) { }
+        });
+        animation.start();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == GALLERY_CODE && resultCode == RESULT_OK){
-            if(data != null){
-                imageUri = data.getData();
-                profilePictureButton.setBackground(null);
-                profilePictureButton.setImageURI(imageUri);
-            }
+        if(requestCode == GALLERY_CODE && resultCode == RESULT_OK && data != null){
+            imageUri = data.getData();
+            profilePictureButton.setBackground(null);
+            addProfilePhotoTextView.setText(null);
+            profilePictureButton.setImageURI(imageUri);
         }
     }
 

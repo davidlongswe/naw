@@ -26,9 +26,12 @@
             android:id="@+id/email"
             android:hint="@string/email_hint"
             android:inputType="textEmailAddress"
-            android:textColorHint="@color/hintTextWhiteIsh"
+            android:textColorHint="@android:color/darker_gray"
+            android:background="@drawable/edit_text_background"
+            android:padding="10dp"
+            android:alpha="0.9"
             android:maxLines="1"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -36,8 +39,11 @@
             android:id="@+id/password"
             android:layout_marginTop="16dp"
             android:hint="@string/password_hint"
-            android:textColor="@android:color/white"
-            android:textColorHint="@color/hintTextWhiteIsh"
+            android:textColorHint="@android:color/darker_gray"
+            android:padding="10dp"
+            android:alpha="0.9"
+            android:background="@drawable/edit_text_background"
+            android:textColor="@android:color/black"
             android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,13 +51,13 @@
 
         <Button
             android:id="@+id/email_sign_in_button"
-            android:textColor="@android:color/white"
-            android:background="@drawable/button_border_bg"
+            android:textColor="@android:color/holo_red_dark"
+            android:background="@drawable/contrast_button"
             android:layout_marginTop="16dp"
             android:padding="10dp"
             android:textStyle="bold"
             android:text="@string/login_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content"/>
 
@@ -72,9 +78,8 @@
             android:background="@drawable/button_border_bg"
             android:padding="10dp"
             android:textStyle="normal"
-            android:text="@string/create_acc_text"
-
-            android:layout_width="wrap_content"
+            android:text="@string/new_user_text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="50dp"/>
