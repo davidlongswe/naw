@@ -83,4 +83,6 @@
     </string-array>
     <string name="title_activity_find_partner">Map</string>
     <string name="menu_search">Search</string>
+    <string name="Users">Users</string>
+    <string name="Clubs">Clubs</string>
 </resources>

@@ -1,28 +1,24 @@
 package com.umu.se.dalo0013.naw;
 
-import androidx.annotation.FontRes;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.umu.se.dalo0013.naw.model.ArmwrestlingClub;
+import com.umu.se.dalo0013.naw.model.UserProfile;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,13 +30,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,33 +43,21 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
-import com.umu.se.dalo0013.naw.model.ArmwrestlingClub;
-import com.umu.se.dalo0013.naw.model.UserProfile;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import util.Config;
-import util.UserProfileApi;
-
 
 public class FindPartnerActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener {
@@ -83,15 +66,19 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
 
     private GoogleMap mMap;
-    private LocationManager locationManager;
-    private LocationListener locationListener;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = db.collection("Profile");
 
-    private ArrayList<ArmwrestlingClub> armwrestlingClubs;
+    private ArrayList<ArmwrestlingClub> armWrestlingClubs;
+    private ArrayList<UserProfile> users;
+
+    private boolean clubButtonPressed = false;
+    private boolean clubsShowing = false;
+    private boolean usersButtonPressed = false;
+    private boolean usersShowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,29 +88,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
 
-        armwrestlingClubs = new ArrayList<>();
-
-        try {
-            JSONObject obj = new JSONObject(Objects.requireNonNull(loadJSONFromRaw()));
-            JSONArray clubArray = obj.getJSONArray("clubs");
-            for (int i = 0; i < clubArray.length() ; i++) {
-                ArmwrestlingClub awc = new ArmwrestlingClub();
-                JSONObject club = clubArray.getJSONObject(i);
-                awc.setClubInfoURL(club.getString("link"));
-                awc.setClubName(club.getString("name"));
-                awc.setClubLocLatitude(club.getString("latitude"));
-                awc.setClubLocLongitude(club.getString("longitude"));
-                awc.setClubAddress(club.getString("address"));
-                armwrestlingClubs.add(awc);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        // Initialize the SDK
         Places.initialize(getApplicationContext(), Config.PLACES_API_KEY);
-        // Create a new PlacesClient instance
         PlacesClient placesClient = Places.createClient(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -131,10 +96,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
-
     }
 
-    private String loadJSONFromRaw(){
+    private String loadJSONFromRaw() {
         String json = null;
         try {
             InputStream is = getResources().openRawResource(R.raw.clubs);
@@ -150,6 +114,84 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         return json;
     }
 
+    private void getArmWrestlingClubs() {
+        armWrestlingClubs = new ArrayList<>();
+        try {
+            JSONObject obj = new JSONObject(Objects.requireNonNull(loadJSONFromRaw()));
+            JSONArray clubArray = obj.getJSONArray("clubs");
+            for (int i = 0; i < clubArray.length(); i++) {
+                ArmwrestlingClub awc = new ArmwrestlingClub();
+                JSONObject club = clubArray.getJSONObject(i);
+                awc.setClubInfoURL(club.getString("link"));
+                awc.setClubName(club.getString("name"));
+                awc.setClubLocLatitude(club.getString("latitude"));
+                awc.setClubLocLongitude(club.getString("longitude"));
+                awc.setClubAddress(club.getString("address"));
+                armWrestlingClubs.add(awc);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void toggleArmWrestlingClubs() {
+        if(clubButtonPressed && !clubsShowing) {
+            for (ArmwrestlingClub club : armWrestlingClubs) {
+                double clubLat = Double.parseDouble(club.getClubLocLatitude());
+                double clubLong = Double.parseDouble(club.getClubLocLongitude());
+                LatLng clubLatLng = new LatLng(clubLat, clubLong);
+                String clubInfo = club.getClubInfoURL();
+                mMap.addMarker(new MarkerOptions()
+                        .position(clubLatLng)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        .title(club.getClubName())
+                        .snippet(clubInfo));
+            }
+            clubsShowing = true;
+        }else{
+            mMap.clear();
+            clubsShowing = false;
+        }
+    }
+    private void getUsers(){
+        users = new ArrayList<>();
+        collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    UserProfile userProfile = document.toObject(UserProfile.class);
+                    users.add(userProfile);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
+    private void toggleUsersShown() {
+        if (usersButtonPressed && !usersShowing) {
+            for (UserProfile user : users) {
+                Double userLatitude = user.getUserLatLng().getLatitude();
+                Double userLongitude = user.getUserLatLng().getLongitude();
+                LatLng userLatLng = new LatLng(userLongitude, userLatitude);
+                /*String userInfo = "Sex: " + user.getSex() + "\n" + "Forearm: " +
+                        user.getForearmSize() + "\n" + "Bicep: " + user.getBicepSize()
+                        + "\n" + "Weight class: " + user.getWeightClass();*/
+                mMap.addMarker(new MarkerOptions()
+                        .position(userLatLng)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                        .title(user.getUserName()));
+            }
+            usersShowing = true;
+        } else {
+            mMap.clear();
+            usersShowing = false;
+        }
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -162,103 +204,32 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        setCameraBounds();
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
-
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-
-        if (Build.VERSION.SDK_INT < 23) {
-            if (ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        } else {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            } else {
-                // we have permission!
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                zoomInOnUser(location);
-                addArmwrestlingClubs();
-            }
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
         }
+        mMap.setMyLocationEnabled(true);
     }
 
-    private void addArmwrestlingClubs(){
-        for(ArmwrestlingClub club : armwrestlingClubs){
-            double clubLat = Double.parseDouble(club.getClubLocLatitude());
-            double clubLong = Double.parseDouble(club.getClubLocLongitude());
-            LatLng clubLatLng = new LatLng(clubLat, clubLong);
-            mMap.addMarker(new MarkerOptions()
-                    .position(clubLatLng)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                    .title(club.getClubName()));
-        }
-    }
-
-    private void zoomInOnUser(Location location){
-        if(location != null) {
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                    .title("Me"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 8));
-        }
+    private void setCameraBounds(){
+        LatLng southWestBound = new LatLng(52.262942, -23.030901);
+        LatLng northEastBound = new LatLng(71.952943, 40.064378);
+        LatLngBounds nord = new LatLngBounds(southWestBound, northEastBound);
+        mMap.setLatLngBoundsForCameraTarget(nord);
     }
 
     @Override
     protected void onStart(){
         super.onStart();
-        collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    UserProfile userProfile = document.toObject(UserProfile.class);
-                    Double userLatitude = userProfile.getUserLatLng().getLatitude();
-                    Double userLongitude = userProfile.getUserLatLng().getLongitude();
-                    LatLng userLatLng = new LatLng(userLongitude, userLatitude);
-                    mMap.addMarker(new MarkerOptions()
-                            .position(userLatLng)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                            .title(userProfile.getUserName()));
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
+        getUsers();
+        getArmWrestlingClubs();
     }
 
     @Override
@@ -268,7 +239,11 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-
+        if(marker.getSnippet() != null) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
+        }else{
+            Toast.makeText(this, "user clicked", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void search(){
@@ -316,6 +291,14 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch(item.getItemId()){
+            case R.id.users:
+                usersButtonPressed = true;
+                toggleUsersShown();
+                break;
+            case R.id.clubs:
+                clubButtonPressed = true;
+                toggleArmWrestlingClubs();
+                break;
             case R.id.search:
                 search();
                 break;

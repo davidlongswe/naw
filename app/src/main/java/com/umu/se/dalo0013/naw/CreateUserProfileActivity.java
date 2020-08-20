@@ -177,8 +177,6 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                 break;
             case R.id.create_acc_save_button:
                 saveProfile();
-                startActivity(new Intent(CreateUserProfileActivity.this, HomePageActivity.class));
-                finish();
                 break;
         }
     }
@@ -246,6 +244,8 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                                         public void onAnimationRepeat(Animator animator) { }
                                     });
                                     animation.start();
+                                    startActivity(new Intent(CreateUserProfileActivity.this, HomePageActivity.class));
+                                    finish();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
