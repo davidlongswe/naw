@@ -43,6 +43,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.umu.se.dalo0013.naw.ui.CustomInfoWindow;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +51,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,13 +177,16 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 Double userLatitude = user.getUserLatLng().getLatitude();
                 Double userLongitude = user.getUserLatLng().getLongitude();
                 LatLng userLatLng = new LatLng(userLongitude, userLatitude);
-                /*String userInfo = "Sex: " + user.getSex() + "\n" + "Forearm: " +
-                        user.getForearmSize() + "\n" + "Bicep: " + user.getBicepSize()
-                        + "\n" + "Weight class: " + user.getWeightClass();*/
+                String userInfo = "Username: " + user.getUserName() + "\n"
+                        + "Sex: " + user.getSex() + "\n"
+                        + "Height: " + user.getHeight() + " cm" + "\n"
+                        + "Forearm: " + user.getForearmSize() + " cm" + "\n"
+                        + "Bicep: " + user.getBicepSize() + " cm" + "\n"
+                        + "Weight class: " + user.getWeightClass();
                 mMap.addMarker(new MarkerOptions()
                         .position(userLatLng)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                        .title(user.getUserName()));
+                        .title(userInfo).snippet(user.getProfilePictureUrl().toString()));
             }
             usersShowing = true;
         } else {
@@ -205,6 +208,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         setCameraBounds();
+        mMap.setInfoWindowAdapter(new CustomInfoWindow(this));
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
         if (ActivityCompat.checkSelfPermission(this,
@@ -240,7 +244,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onInfoWindowClick(Marker marker) {
         if(marker.getSnippet() != null) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
+            //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
+            Toast.makeText(this, "user clicked" + currentUser.getPhotoUrl(), Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(this, "user clicked", Toast.LENGTH_SHORT).show();
         }

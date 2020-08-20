@@ -1,5 +1,7 @@
 package com.umu.se.dalo0013.naw.model;
 
+import android.net.Uri;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
 

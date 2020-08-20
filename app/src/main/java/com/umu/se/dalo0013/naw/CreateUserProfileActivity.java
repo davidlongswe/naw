@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -24,8 +26,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -43,6 +48,8 @@ import com.umu.se.dalo0013.naw.model.UserProfile;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
@@ -180,12 +187,16 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                 startActivityForResult(galleryIntent, GALLERY_CODE);
                 break;
             case R.id.create_acc_save_button:
-                saveProfile();
+                try {
+                    saveProfile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
 
-    private void saveProfile(){
+    private void saveProfile() throws IOException {
         final String userBio = userBioEditText.getText().toString().trim();
         final String userSex = userSexSpinner.getSelectedItem().toString().trim();
         final String userHeight = heightEditText.getText().toString().trim();
@@ -202,50 +213,75 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                 && !TextUtils.isEmpty(userWeightClass)
                 && homeTown != null
                 && imageUri != null){
+
             final StorageReference filepath = storageReference
                     .child("profile_picture_" + Timestamp.now().getSeconds());
-            filepath.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+            byte[] data = baos.toByteArray();
+            final UploadTask uploadTask = filepath.putBytes(data);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                    filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                         @Override
-                        public void onSuccess(Uri uri) {
-                            String imageUrl = uri.toString();
-                            UserProfile userProfile = new UserProfile();
-                            userProfile.setBio(userBio);
-                            userProfile.setProfilePictureUrl(imageUrl);
-                            userProfile.setSex(userSex);
-                            userProfile.setHeight(userHeight);
-                            userProfile.setForearmSize(userForearmSize);
-                            userProfile.setLastUpdated(new Timestamp(new Date()));
-                            userProfile.setWeightClass(userWeightClass);
-                            userProfile.setBicepSize(userBicepSize);
-                            userProfile.setUserLatLng(userLocation);
-                            userProfile.setHomeTown(homeTown);
-                            userProfile.setUserName(currentUserName);
-                            userProfile.setUserId(currentUserId);
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw Objects.requireNonNull(task.getException());
+                            }
+                            // Continue with the task to get the download URL
+                            return filepath.getDownloadUrl();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+                                String imageUrl = Objects.requireNonNull(task.getResult()).toString();
+                                UserProfile userProfile = new UserProfile();
+                                userProfile.setBio(userBio);
+                                userProfile.setProfilePictureUrl(imageUrl);
+                                userProfile.setSex(userSex);
+                                userProfile.setHeight(userHeight);
+                                userProfile.setForearmSize(userForearmSize);
+                                userProfile.setLastUpdated(new Timestamp(new Date()));
+                                userProfile.setWeightClass(userWeightClass);
+                                userProfile.setBicepSize(userBicepSize);
+                                userProfile.setUserLatLng(userLocation);
+                                userProfile.setHomeTown(homeTown);
+                                userProfile.setUserName(currentUserName);
+                                userProfile.setUserId(currentUserId);
 
-                            collectionReference.document(user.getUid()).set(userProfile).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    prolongProgressbarAnimation();
-                                    startActivity(new Intent(CreateUserProfileActivity.this, HomePageActivity.class));
-                                    finish();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d("TAG", "onFailure: " + e.getMessage());
-                                }
-                            });
+                                collectionReference.document(
+                                        user.getUid())
+                                        .set(userProfile)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        prolongProgressbarAnimation();
+                                        startActivity(
+                                                new Intent(
+                                                        CreateUserProfileActivity.this,
+                                                        HomePageActivity.class));
+                                        finish();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("TAG", "onFailure: " + e.getMessage());
+                                    }
+                                });
+
+                            }
                         }
                     });
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    profileCreationProgressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(CreateUserProfileActivity.this,
+                            "Upload Failed -> " + e, Toast.LENGTH_LONG).show();
                 }
             });
         }else{
