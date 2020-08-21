@@ -131,7 +131,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

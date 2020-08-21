@@ -1,6 +1,7 @@
 package com.umu.se.dalo0013.naw;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
@@ -130,27 +132,35 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch(v.getId()){
             case(R.id.arm_bets_tv_channel):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UCujb5MIcKh7KeSWQ7Uax-Wg"));
                 break;
             case(R.id.arm_wrestling_tv_channel):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UC6eMRqZWwSBYS6IlVYD7dwQ"));
                 break;
             case(R.id.devon_larratt_channel):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UCBcMvaSRmSh3362bzvOBerw"));
                 break;
             case(R.id.global_arm_wrestling_channel):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UCPG1rPE_h_vlXRgaL1clakw"));
                 break;
             case(R.id.ryan_bowen_channel):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UCIEjGMfXbN4LFYSnV8qSgAQ"));
                 break;
             case(R.id.sweden_arm_wrestling_tv_channel):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UCy3YpN20uTexnE8DClxtp8A"));
                 break;
             case(R.id.voice_of_arm_wrestling_channel):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UCAH2krcji9uc3gYSqa33Zyw"));
                 break;
             case(R.id.wal_channel):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UC1pdbN6j_txoNhXVWVtouuQ"));
                 break;
         }

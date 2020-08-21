@@ -41,10 +41,13 @@
         <activity android:name=".UserProfileActivity"
             android:launchMode="singleInstance"/>
         <activity android:name=".CreateUserProfileActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:launchMode="singleInstance"/>
         <activity android:name=".CreateAccountActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:launchMode="singleInstance"/>
         <activity android:name=".LogInActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:launchMode="singleInstance"/>
         <activity
             android:name=".MainActivity"

@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -220,9 +221,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 && ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            return;
+            Log.d(TAG, "onMapReady: PERMISSION NOT GRANTED");
         }
-        mMap.setMyLocationEnabled(true);
     }
 
     private void setCameraBounds(){
@@ -240,7 +240,15 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public boolean onMarkerClick(final Marker marker) {
+        marker.showInfoWindow();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                marker.showInfoWindow();
+            }
+        }, 200);
        return false;
     }
 
