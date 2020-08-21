@@ -8,7 +8,6 @@
     <string name="username_hint">Username</string>
     <string name="menu_title">Add thoughts</string>
     <string name="signout">Signout</string>
-    <string name="no_thoughts_hint">Write a journal entry by clicking "+" icon</string>
     <string name="join_text">JOIN</string>
     <string name="save">SAVE</string>
     <string name="date_of_birth">Date of birth:</string>
@@ -38,7 +37,7 @@
     <string name="hometown_hint">Hometown </string>
     <string name="bicep_size_text_cm">Bicep size (cm)</string>
     <string name="default_bio">GRIP AND RIP!</string>
-    <string name="enter_bio_text">Say something about yourself..</string>
+    <string name="enter_bio_text">Let people know how strong you are!</string>
     <string name="profile_menu_text">Profile</string>
     <string name="home_menu_text">Home</string>
     <string name="edit_profile">Edit</string>
@@ -48,7 +47,6 @@
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
     <string name="find_a_partner">Find a partner</string>
     <string name="videos">Videos</string>
-    <string name="homepage_slogan">Learn how to armwrestle \n and find armwrestlers\n in your area!</string>
     <string name="popular_videos">Popular videos</string>
     <string name="tutorial_videos">Tutorial videos</string>
     <string name="popular_youtube_channels">Popular YouTube channels</string>
@@ -89,4 +87,16 @@
     <string name="logo_text">logo</string>
     <string name="select_photo_text">Select photo</string>
     <string name="add_photo_text_view">Add photo</string>
+    <string name="find_armwrestlers">FIND ARMWRESTLERS NEAR YOU</string>
+    <string name="practice">PRACTICE</string>
+    <string name="champion"> CHAMPION</string>
+    <string name="become_a">BECOME A</string>
+    <string name="armbets_tv">ARMBETS TV</string>
+    <string name="armwrestling_tv">ARMWRESTLING TV</string>
+    <string name="devonlarratt">DEVONLARRATT</string>
+    <string name="global_arm_wresting">GLOBAL\nARMWRESTLING</string>
+    <string name="ryan_bowen">RYANBOWEN</string>
+    <string name="sweden_awtv">SATV</string>
+    <string name="voice_of_armw">VOICE OF\nARMWRESTLING</string>
+    <string name="wal">WAL</string>
 </resources>
