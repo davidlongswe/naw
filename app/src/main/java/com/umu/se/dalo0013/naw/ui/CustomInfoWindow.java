@@ -35,7 +35,6 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
     @Override
     public View getInfoContents(final Marker marker) {
         CircleImageView infoWindowProfilePic = view.findViewById(R.id.info_window_profile_picture);
-
         Picasso.get().load(marker.getSnippet()).placeholder(R.drawable.loading).fit().into(infoWindowProfilePic,
                 new MarkerCallback(marker));
         TextView infoWindowDetails = view.findViewById(R.id.info_window_user_details);

@@ -1,6 +1,9 @@
 package com.umu.se.dalo0013.naw;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.squareup.picasso.Picasso;
 import com.umu.se.dalo0013.naw.model.ArmwrestlingClub;
 import com.umu.se.dalo0013.naw.model.UserProfile;
 
@@ -18,6 +21,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -61,7 +66,7 @@ import java.util.Objects;
 import util.Config;
 
 public class FindPartnerActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, View.OnClickListener {
 
     public static final String TAG = "FindPartnerActivity";
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -81,6 +86,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     private boolean usersButtonPressed = false;
     private boolean usersShowing = false;
 
+    private Button userButton, searchButton, clubButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +104,14 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 .findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
+
+        clubButton = findViewById(R.id.club_map_button);
+        searchButton = findViewById(R.id.search_map_button);
+        userButton = findViewById(R.id.user_map_button);
+
+        clubButton.setOnClickListener(this);
+        searchButton.setOnClickListener(this);
+        userButton.setOnClickListener(this);
     }
 
     private String loadJSONFromRaw() {
@@ -145,7 +160,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 String clubInfo = club.getClubInfoURL();
                 mMap.addMarker(new MarkerOptions()
                         .position(clubLatLng)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.group_icon))
                         .title(club.getClubName())
                         .snippet(clubInfo));
             }
@@ -189,8 +204,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                         + "Weight class: " + user.getWeightClass();
                 mMap.addMarker(new MarkerOptions()
                         .position(userLatLng)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                        .title(userInfo).snippet(user.getProfilePictureUrl()));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_icon))
+                        .title(userInfo)
+                        .snippet(user.getProfilePictureUrl()));
             }
             usersShowing = true;
         } else {
@@ -215,6 +231,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         setCameraBounds();
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
+                this, R.raw.map_dark_mode2));
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
@@ -298,7 +316,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.map_menu, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -306,17 +324,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch(item.getItemId()){
-            case R.id.users:
-                usersButtonPressed = true;
-                toggleUsersShown();
-                break;
-            case R.id.clubs:
-                clubButtonPressed = true;
-                toggleArmWrestlingClubs();
-                break;
-            case R.id.search:
-                search();
-                break;
             case R.id.action_home:
                 if(currentUser != null && firebaseAuth != null){
                     startActivity(new Intent(FindPartnerActivity.this, HomePageActivity.class));
@@ -344,5 +351,22 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.user_map_button:
+                usersButtonPressed = true;
+                toggleUsersShown();
+                break;
+            case R.id.club_map_button:
+                clubButtonPressed = true;
+                toggleArmWrestlingClubs();
+                break;
+            case R.id.search_map_button:
+                search();
+                break;
+        }
     }
 }

@@ -1,15 +1,51 @@
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
     tools:context="com.umu.se.dalo0013.naw.FindPartnerActivity" >
-
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:layout_gravity="center_horizontal"
+            style="?android:attr/buttonBarStyle">
+            <Button
+                android:id="@+id/user_map_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle"
+                android:background="@drawable/user_button_background"
+                android:layout_marginEnd="20dp" />
+            <Button
+                android:id="@+id/club_map_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/black_groups_button"
+                android:layout_marginEnd="20dp"
+                style="?android:attr/buttonBarButtonStyle" />
+            <Button
+                android:id="@+id/search_map_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/search_map_button"
+                style="?android:attr/buttonBarButtonStyle" />
+        </LinearLayout>
+    </FrameLayout>
 
-</LinearLayout>
+
+
+
+</FrameLayout>

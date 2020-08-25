@@ -76,7 +76,7 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                     UserProfile userProfile = document.toObject(UserProfile.class);
-                    Picasso.get().load(userProfile.getProfilePictureUrl()).placeholder(R.drawable.sunset).fit().into(profilePic);
+                    Picasso.get().load(userProfile.getProfilePictureUrl()).fit().into(profilePic);
                     userBio.setText(userProfile.getBio());
                     userName.setText(userProfile.getUserName());
                     profileSex.setText(userProfile.getSex());
