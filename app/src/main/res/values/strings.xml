@@ -37,7 +37,7 @@
     <string name="hometown_hint">Hometown </string>
     <string name="bicep_size_text_cm">Bicep size (cm)</string>
     <string name="default_bio">GRIP AND RIP!</string>
-    <string name="enter_bio_text">Let people know how strong you are!</string>
+    <string name="enter_bio_text">Tell people about yourself!</string>
     <string name="profile_menu_text">Profile</string>
     <string name="home_menu_text">Home</string>
     <string name="edit_profile">Edit</string>
@@ -74,6 +74,49 @@
         <item>+110 kg</item>
     </string-array>
 
+    <string-array name="clubs">
+        <item>None</item>
+        <item>Arvidsjaur Armsport Idrottsklubb</item>
+        <item>Blue-Lake Armsport IF</item>
+        <item>Drakbrytarnas Idrottsförening</item>
+        <item>Ekerö Idrottsklubb</item>
+        <item>Falkenbergs Armsportklubb</item>
+        <item>Flen Sport &amp; Hälsa Idrottsförening</item>
+        <item>Föreningen Brynäs Armwrestling</item>
+        <item>Föreningen Dalabrytarna</item>
+        <item>Föreningen Flens Armfighters</item>
+        <item>Föreningen Göteborg Armsport</item>
+        <item>Föreningen Northern Arms</item>
+        <item>Föreningen Storuman Armsport Lappmarken</item>
+        <item>Föreningen Strömbrytarna</item>
+        <item>Föreningen Trollhättans Armsport</item>
+        <item>Fränsta Armsport Klubb</item>
+        <item>Fyshuset Sport Klubb Gefle</item>
+        <item>Hälsingland Arms IF</item>
+        <item>Hammarby IF Armbrytarförening</item>
+        <item>Hedemora Armsports Klubb</item>
+        <item>Iron Arms Wexio IF</item>
+        <item>Jönköping Armbrytarklubb</item>
+        <item>Lycksele Armfighters Club hos Trim 365</item>
+        <item>Nora Atletklubb</item>
+        <item>Örnsköldsviks Atletklubb</item>
+        <item>Rauk Arm &amp; Storsudrets Armbrytarklubb</item>
+        <item>Skänninge Armbrytarklubb</item>
+        <item>Storsjöbrytarna Armbrytarklubb</item>
+        <item>Studentidrotten i Luleå</item>
+        <item>Svanskogs IF</item>
+        <item>Tassbrottarna ArmBrytningsKlubb</item>
+        <item>Vätternbrytarna Motala Armbrytarklubb</item>
+        <item>Viking Kraftsport IF</item>
+    </string-array>
+
+    <string-array name="hands">
+        <item>Left hand</item>
+        <item>Right hand</item>
+        <item>Both</item>
+
+    </string-array>
+
     <string-array name="sexes">
         <item>Male</item>
         <item>Female</item>
@@ -89,8 +132,8 @@
     <string name="add_photo_text_view">Add photo</string>
     <string name="find_armwrestlers">FIND ARMWRESTLERS NEAR YOU</string>
     <string name="practice">PRACTICE</string>
-    <string name="champion"> CHAMPION</string>
-    <string name="become_a">BECOME A</string>
+    <string name="champion"> CHAMPION!</string>
+    <string name="become_a">PRACTICE, BECOME A</string>
     <string name="armbets_tv">ARMBETS TV</string>
     <string name="armwrestling_tv">ARMWRESTLING TV</string>
     <string name="devonlarratt">DEVONLARRATT</string>
@@ -110,4 +153,9 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="learn_more">Learn more</string>
+    <string name="profile_club_text">Club</string>
+    <string name="Hand">Hand</string>
+    <string name="here">here</string>
+    <string name="hometown_create_prof">Hometown:</string>
 </resources>

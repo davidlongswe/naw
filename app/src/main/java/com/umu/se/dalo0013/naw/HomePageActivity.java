@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
@@ -38,6 +39,7 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
             ryanBowen,
             swedenArmTV,
             voa, wal;
+    private Button goToFindPartner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         swedenArmTV = findViewById(R.id.sweden_arm_wrestling_tv_channel);
         voa = findViewById(R.id.voice_of_arm_wrestling_channel);
         wal = findViewById(R.id.wal_channel);
+        goToFindPartner = findViewById(R.id.go_to_map_from_home_page);
 
         armBetsTV.setOnClickListener(this);
         armWrestlingTV.setOnClickListener(this);
@@ -62,6 +65,7 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         swedenArmTV.setOnClickListener(this);
         voa.setOnClickListener(this);
         wal.setOnClickListener(this);
+        goToFindPartner.setOnClickListener(this);
 
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -131,6 +135,11 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch(v.getId()){
+            case(R.id.go_to_map_from_home_page):
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
+                startActivity(new Intent(HomePageActivity.this, FindPartnerActivity.class));
+                finish();
+                break;
             case(R.id.arm_bets_tv_channel):
                 v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(YouTubeIntents.createChannelIntent(this, "UCujb5MIcKh7KeSWQ7Uax-Wg"));

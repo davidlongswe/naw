@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,6 +21,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
@@ -37,7 +42,7 @@ public class LogInActivity extends AppCompatActivity {
     private Button logInButton;
     private Button createAccountButton;
     private AutoCompleteTextView emailAdress;
-    private EditText password;
+    private EditText passwordEditText;
     private ProgressBar progressbarLogIn;
 
     private FirebaseAuth firebaseAuth;
@@ -57,7 +62,7 @@ public class LogInActivity extends AppCompatActivity {
         logInButton = findViewById(R.id.email_sign_in_button);
         createAccountButton = findViewById(R.id.create_account_button_login);
         emailAdress = findViewById(R.id.email);
-        password = findViewById(R.id.password);
+        passwordEditText = findViewById(R.id.password);
         progressbarLogIn = findViewById(R.id.progressbar_login);
         progressbarLogIn.setVisibility(View.INVISIBLE);
 
@@ -74,51 +79,74 @@ public class LogInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loginEmailPasswordUser(emailAdress.getText().toString().trim(),
-                        password.getText().toString().trim());
+                        passwordEditText.getText().toString().trim());
             }
         });
     }
 
-    private void loginEmailPasswordUser(String email, String password){
+    private void loginEmailPasswordUser(final String email, final String password) {
         progressbarLogIn.setVisibility(View.VISIBLE);
         if (!TextUtils.isEmpty(email)
                 && !TextUtils.isEmpty(password)) {
             firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        assert user != null;
-                        final String currentUserId = user.getUid();
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = firebaseAuth.getCurrentUser();
+                                assert user != null;
+                                final String currentUserId = user.getUid();
 
-                        collectionReference
-                                .whereEqualTo("userId", currentUserId)
-                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots,
-                                                        @Nullable FirebaseFirestoreException e) {
-                                        if (e != null) {
-                                        }
-                                        assert queryDocumentSnapshots != null;
-                                        if (!queryDocumentSnapshots.isEmpty()) {
-                                            progressbarLogIn.setVisibility(View.INVISIBLE);
-                                            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                                                UserProfileApi userProfileApi = UserProfileApi.getInstance();
-                                                userProfileApi.setUsername(snapshot.getString("username"));
-                                                userProfileApi.setUserId(snapshot.getString("userId"));
-
-                                                //Go to ListActivity
-                                                startActivity(new Intent(LogInActivity.this,
-                                                        HomePageActivity.class));
+                                collectionReference
+                                        .whereEqualTo("userId", currentUserId)
+                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots,
+                                                                @Nullable FirebaseFirestoreException e) {
+                                                if (e != null) {
+                                                    Log.d("LogInActivity", "onEvent: "
+                                                            + e.getLocalizedMessage());
+                                                }
+                                                assert queryDocumentSnapshots != null;
+                                                if (!queryDocumentSnapshots.isEmpty()) {
+                                                    progressbarLogIn.setVisibility(View.INVISIBLE);
+                                                    for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                                        UserProfileApi userProfileApi = UserProfileApi.getInstance();
+                                                        userProfileApi.setUsername(snapshot.getString("username"));
+                                                        userProfileApi.setUserId(snapshot.getString("userId"));
+                                                    }
+                                                    //Go to ListActivity
+                                                    startActivity(new Intent(LogInActivity.this,
+                                                            HomePageActivity.class));
+                                                }
                                             }
-                                        }
-                                    }
-                                });
-                    }
-            }).addOnFailureListener(new OnFailureListener() {
+                                        });
+                            } else {
+                                progressbarLogIn.setVisibility(View.INVISIBLE);
+                                try
+                                {
+                                    throw Objects.requireNonNull(task.getException());
+                                }
+                                catch (FirebaseAuthInvalidCredentialsException malformedEmail)
+                                {
+                                    passwordEditText.setError("Invalid password!");
+                                }
+                                catch (FirebaseAuthInvalidUserException existEmail)
+                                {
+                                    emailAdress.setError("Invalid email address!");
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.d("CreateAccountActivity",
+                                            "onComplete: " + e.getMessage());
+                                }
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     progressbarLogIn.setVisibility(View.INVISIBLE);
+                    Toast.makeText(LogInActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }else{

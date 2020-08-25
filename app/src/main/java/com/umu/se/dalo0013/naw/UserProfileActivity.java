@@ -38,7 +38,9 @@ public class UserProfileActivity extends AppCompatActivity {
             profileBicepSize,
             profileWeightClass,
             profileHomeTown,
-            userBio;
+            userBio,
+            profileHand,
+            profileClub;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -62,6 +64,8 @@ public class UserProfileActivity extends AppCompatActivity {
         profileBicepSize = findViewById(R.id.profile_bicep_text_view);
         profileWeightClass = findViewById(R.id.profile_weight_class_text_view);
         profileHomeTown = findViewById(R.id.profile_hometown_text_view);
+        profileHand = findViewById(R.id.profile_hand_text_view);
+        profileClub = findViewById(R.id.profile_club_text_view);
 
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
@@ -85,6 +89,8 @@ public class UserProfileActivity extends AppCompatActivity {
                     profileBicepSize.setText(MessageFormat.format("{0} cm", userProfile.getBicepSize()));
                     profileWeightClass.setText(userProfile.getWeightClass());
                     profileHomeTown.setText(userProfile.getHomeTown());
+                    profileHand.setText(userProfile.getHand());
+                    profileClub.setText(userProfile.getClub());
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {

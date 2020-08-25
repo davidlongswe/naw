@@ -27,20 +27,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle"
-                android:background="@drawable/user_button_background"
+                android:background="@drawable/user_button_map"
                 android:layout_marginEnd="20dp" />
             <Button
                 android:id="@+id/club_map_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/black_groups_button"
+                android:background="@drawable/group_button_map"
                 android:layout_marginEnd="20dp"
                 style="?android:attr/buttonBarButtonStyle" />
             <Button
                 android:id="@+id/search_map_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/search_map_button"
+                android:background="@drawable/search_button_map"
                 style="?android:attr/buttonBarButtonStyle" />
         </LinearLayout>
     </FrameLayout>

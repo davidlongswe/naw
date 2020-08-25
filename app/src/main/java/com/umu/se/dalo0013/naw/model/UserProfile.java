@@ -19,11 +19,17 @@ public class UserProfile {
     private String homeTown;
     private util.LatLng userLatLng;
     private String bio;
+    private String hand;
+    private String club;
 
     public UserProfile() { //Must for firestore to work
     }
 
-    public UserProfile(String profilePictureUrl, String userId, Timestamp lastUpdated, String height, String userName, String sex, String weightClass, String forearmSize, String bicepSize, String homeTown, util.LatLng userLatLng, String bio) {
+    public UserProfile(String profilePictureUrl, String userId, Timestamp lastUpdated,
+                       String height, String userName, String sex,
+                       String weightClass, String forearmSize, String bicepSize,
+                       String homeTown, util.LatLng userLatLng, String bio,
+                       String hand, String club) {
         this.profilePictureUrl = profilePictureUrl;
         this.userId = userId;
         this.lastUpdated = lastUpdated;
@@ -36,6 +42,24 @@ public class UserProfile {
         this.homeTown = homeTown;
         this.userLatLng = userLatLng;
         this.bio = bio;
+        this.hand = hand;
+        this.club = club;
+    }
+
+    public String getHand() {
+        return hand;
+    }
+
+    public void setHand(String hand) {
+        this.hand = hand;
+    }
+
+    public String getClub() {
+        return club;
+    }
+
+    public void setClub(String club) {
+        this.club = club;
     }
 
     public String getHomeTown() {

@@ -14,13 +14,13 @@ import com.umu.se.dalo0013.naw.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
+public class UserCustomInfoWindow implements GoogleMap.InfoWindowAdapter {
     private static final String TAG = "CustomInfoWindow";
     private View view;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public CustomInfoWindow(Context context) {
+    public UserCustomInfoWindow(Context context) {
         this.context = context;
         layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert layoutInflater != null;
@@ -29,16 +29,17 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoWindow(Marker marker) {
-        return null;
-    }
-
-    @Override
-    public View getInfoContents(final Marker marker) {
         CircleImageView infoWindowProfilePic = view.findViewById(R.id.info_window_profile_picture);
         Picasso.get().load(marker.getSnippet()).placeholder(R.drawable.loading).fit().into(infoWindowProfilePic,
                 new MarkerCallback(marker));
         TextView infoWindowDetails = view.findViewById(R.id.info_window_user_details);
         infoWindowDetails.setText(marker.getTitle());
+        return view;
+    }
+
+    @Override
+    public View getInfoContents(final Marker marker) {
+
         return view;
     }
 

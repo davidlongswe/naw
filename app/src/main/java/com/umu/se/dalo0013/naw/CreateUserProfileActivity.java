@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
+import util.Config;
 import util.LatLng;
 import util.UserProfileApi;
 
@@ -71,10 +72,14 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
     private ImageButton profilePictureButton;
     private Spinner userSexSpinner;
     private Spinner weightClassSpinner;
+    private Spinner userHandSpinner;
+    private Spinner userClubSpinner;
     private ProgressBar profileCreationProgressBar;
 
     ArrayAdapter<CharSequence> sexSpinnerAdapter;
     ArrayAdapter<CharSequence> weightClassSpinnerAdapter;
+    ArrayAdapter<CharSequence> handSpinnerAdapter;
+    ArrayAdapter<CharSequence> clubSpinnerAdapter;
 
     public static final int GALLERY_CODE = 1;
     private Uri imageUri;
@@ -102,7 +107,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         storageReference = FirebaseStorage.getInstance().getReference();
 
         // Initialize the SDK
-        Places.initialize(getApplicationContext(), "AIzaSyBWbCiPv4T6jCxqnAS5VAqPjfZ8XyVsn3I");
+        Places.initialize(getApplicationContext(), Config.PLACES_API_KEY);
 
         userBioEditText = findViewById(R.id.user_bio_profile_create);
         userName = findViewById(R.id.create_profile_username);
@@ -136,18 +141,28 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         };
 
         userSexSpinner = findViewById(R.id.user_sex_spinner);
+        userHandSpinner = findViewById(R.id.user_hand_spinner);
+        userClubSpinner = findViewById(R.id.user_club_spinner);
         weightClassSpinner = findViewById(R.id.weight_class_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         sexSpinnerAdapter = ArrayAdapter.createFromResource(this,
                 R.array.sexes, android.R.layout.simple_spinner_item);
         weightClassSpinnerAdapter = ArrayAdapter.createFromResource(this,
                 R.array.weight_classes, android.R.layout.simple_spinner_item);
+        handSpinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.hands, android.R.layout.simple_spinner_item);
+        clubSpinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.clubs, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         sexSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         weightClassSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        handSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        clubSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         userSexSpinner.setAdapter(sexSpinnerAdapter);
         weightClassSpinner.setAdapter(weightClassSpinnerAdapter);
+        userHandSpinner.setAdapter(handSpinnerAdapter);
+        userClubSpinner.setAdapter(clubSpinnerAdapter);
 
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
@@ -202,6 +217,8 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         final String userForearmSize = forearmEditText.getText().toString().trim();
         final String userBicepSize = bicepEditText.getText().toString().trim();
         final String userWeightClass = weightClassSpinner.getSelectedItem().toString().trim();
+        final String userHand = userHandSpinner.getSelectedItem().toString().trim();
+        final String userClub = userClubSpinner.getSelectedItem().toString().trim();
         profileCreationProgressBar.setVisibility(View.VISIBLE);
 
         if(!TextUtils.isEmpty(userBio)
@@ -210,6 +227,8 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                 && !TextUtils.isEmpty(userForearmSize)
                 && !TextUtils.isEmpty(userBicepSize)
                 && !TextUtils.isEmpty(userWeightClass)
+                && !TextUtils.isEmpty(userHand)
+                && !TextUtils.isEmpty(userClub)
                 && homeTown != null
                 && imageUri != null){
 
@@ -250,6 +269,8 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                                 userProfile.setHomeTown(homeTown);
                                 userProfile.setUserName(currentUserName);
                                 userProfile.setUserId(currentUserId);
+                                userProfile.setHand(userHand);
+                                userProfile.setClub(userClub);
 
                                 collectionReference.document(
                                         user.getUid())
@@ -286,14 +307,17 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         }else{
             warnUserOfEmptyFields(userBio, userSex,
                     userHeight, userForearmSize,
-                    userBicepSize, userWeightClass, homeTown, imageUri);
+                    userBicepSize, userWeightClass,
+                    homeTown, imageUri,
+                    userHand, userClub);
             profileCreationProgressBar.setVisibility(View.INVISIBLE);
         }
     }
 
     private void warnUserOfEmptyFields(String userBio, String userSex, String userHeight,
                                   String userForearmSize, String userBicepSize,
-                                  String userWeightClass, String homeTown, Uri imageUri){
+                                  String userWeightClass, String homeTown, Uri imageUri,
+                                       String userHand, String userClub){
         String required = "Required field";
         if(TextUtils.isEmpty(userBio)){
             userBioEditText.setError(required);
@@ -302,7 +326,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
             TextView sexErrorText = (TextView)userSexSpinner.getSelectedView();
             sexErrorText.setError("");
             sexErrorText.setTextColor(Color.RED);
-            sexErrorText.setText("Please choose sex!");
+            sexErrorText.setText("Please choose gender!");
         }
         if(TextUtils.isEmpty(userHeight)){
             heightEditText.setError(required);
@@ -324,6 +348,18 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         }
         if(imageUri == null){
             addProfilePhotoTextView.setTextColor(Color.RED);
+        }
+        if(TextUtils.isEmpty(userHand)){
+            TextView handErrorText = (TextView)userHandSpinner.getSelectedView();
+            handErrorText.setError("");
+            handErrorText.setTextColor(Color.RED);
+            handErrorText.setText("Please choose a hand!");
+        }
+        if(TextUtils.isEmpty(userClub)){
+            TextView clubErrorText = (TextView)userClubSpinner.getSelectedView();
+            clubErrorText.setError("");
+            clubErrorText.setTextColor(Color.RED);
+            clubErrorText.setText("Please choose a club!");
         }
     }
 

@@ -1,9 +1,7 @@
 package com.umu.se.dalo0013.naw;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.squareup.picasso.Picasso;
 import com.umu.se.dalo0013.naw.model.ArmwrestlingClub;
 import com.umu.se.dalo0013.naw.model.UserProfile;
 
@@ -49,7 +47,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.umu.se.dalo0013.naw.ui.CustomInfoWindow;
+import com.umu.se.dalo0013.naw.ui.ClubCustomInfoWindow;
+import com.umu.se.dalo0013.naw.ui.UserCustomInfoWindow;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -152,17 +151,16 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     private void toggleArmWrestlingClubs() {
         if(clubButtonPressed && !clubsShowing) {
-            mMap.setInfoWindowAdapter(null);
+            mMap.setInfoWindowAdapter(new ClubCustomInfoWindow(this));
             for (ArmwrestlingClub club : armWrestlingClubs) {
                 double clubLat = Double.parseDouble(club.getClubLocLatitude());
                 double clubLong = Double.parseDouble(club.getClubLocLongitude());
                 LatLng clubLatLng = new LatLng(clubLat, clubLong);
-                String clubInfo = club.getClubInfoURL();
                 mMap.addMarker(new MarkerOptions()
                         .position(clubLatLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.group_icon))
                         .title(club.getClubName())
-                        .snippet(clubInfo));
+                        .snippet(club.getClubInfoURL()));
             }
             clubsShowing = true;
         }else{
@@ -191,7 +189,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     private void toggleUsersShown() {
         if (usersButtonPressed && !usersShowing) {
-            mMap.setInfoWindowAdapter(new CustomInfoWindow(this));
+            mMap.setInfoWindowAdapter(new UserCustomInfoWindow(this));
             for (UserProfile user : users) {
                 Double userLatitude = user.getUserLatLng().getLatitude();
                 Double userLongitude = user.getUserLatLng().getLongitude();
@@ -201,7 +199,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                         + "Height: " + user.getHeight() + " cm" + "\n"
                         + "Forearm: " + user.getForearmSize() + " cm" + "\n"
                         + "Bicep: " + user.getBicepSize() + " cm" + "\n"
-                        + "Weight class: " + user.getWeightClass();
+                        + "Weight class: " + user.getWeightClass() + "\n"
+                        + "Hand: " + user.getHand() + "\n"
+                        + "Club: " + user.getClub() + "\n";
                 mMap.addMarker(new MarkerOptions()
                         .position(userLatLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_icon))
@@ -232,7 +232,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
-                this, R.raw.map_dark_mode2));
+                this, R.raw.map_dark_mode));
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
@@ -272,9 +272,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        if(usersShowing && !clubsShowing){
-            Toast.makeText(this, "user clicked", Toast.LENGTH_SHORT).show();
-        }else if((clubsShowing && !usersShowing)){
+        if((clubsShowing && !usersShowing)){
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
         }
     }

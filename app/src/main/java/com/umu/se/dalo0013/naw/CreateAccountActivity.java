@@ -19,6 +19,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -136,15 +139,36 @@ public class CreateAccountActivity extends AppCompatActivity {
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-
+                                        Log.d("CreateAccountActivity",
+                                                "onFailure: " + e.getMessage() );
                                     }
                                 });
 
                             } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w("TAG", "createUserWithEmail:failure", task.getException());
+                                try
+                                {
+                                    throw Objects.requireNonNull(task.getException());
+                                }
+                                // if user enters wrong email.
+                                catch (FirebaseAuthWeakPasswordException weakPassword)
+                                {
+                                    passwordEditText.setError("Weak password!");
+                                }
+                                // if user enters wrong password.
+                                catch (FirebaseAuthInvalidCredentialsException malformedEmail)
+                                {
+                                    emailEditText.setError("Invalid email address");
+                                }
+                                catch (FirebaseAuthUserCollisionException existEmail)
+                                {
+                                    emailEditText.setError("That email exists, try logging in!");
+                                }
+                                catch (Exception e)
+                                {
+                                    Log.d("CreateAccountActivity",
+                                            "onComplete: " + e.getMessage());
+                                }
                             }
-                            // ...
                         }
                     });
         }else{
