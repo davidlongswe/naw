@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/chat_item_main_ll"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/chat_item_det_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/message_user"
+            android:textStyle="normal|bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/message_time"
+            android:layout_marginStart="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+        <com.github.library.bubbleview.BubbleTextView
+            android:layout_marginTop="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:visibility="invisible"
+            android:layout_alignParentStart="true"
+            android:id="@+id/current_user_message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:arrowWidth="8dp"
+            app:angle="8dp"
+            app:arrowHeight="10dp"
+            app:arrowPosition="14dp"
+            app:arrowLocation="left"
+            app:bubbleColor="#e94f3f"
+            app:arrowCenter="true" />
+        <com.github.library.bubbleview.BubbleTextView
+            android:layout_marginTop="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:visibility="invisible"
+            android:id="@+id/contact_message_text"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:arrowWidth="8dp"
+            app:angle="8dp"
+            app:arrowHeight="10dp"
+            app:arrowPosition="14dp"
+            app:arrowLocation="right"
+            app:bubbleColor="#EC8378"
+            app:arrowCenter="true" />
+    </RelativeLayout>
+
+
+</LinearLayout>

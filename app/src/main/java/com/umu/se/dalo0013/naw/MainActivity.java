@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -56,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
                                     UserProfileApi userProfileApi = UserProfileApi.getInstance();
                                     userProfileApi.setUserId(snapshot.getString("userId"));
                                     userProfileApi.setUsername(snapshot.getString("username"));
-
                                     startActivity(new Intent(MainActivity.this, HomePageActivity.class));
                                     finish();
                                 }
@@ -69,16 +69,21 @@ public class MainActivity extends AppCompatActivity {
 
         //Source: https://www.pexels.com/video/a-man-building-his-muscle-by-exercising-with-dumbbells-4115126/
         bicepVideoView = findViewById(R.id.bicep_video_view);
-        Uri bicepVideoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.bicep_curl);
+        Uri bicepVideoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.armwrestle_dev);
         bicepVideoView.setVideoURI(bicepVideoUri);
         bicepVideoView.start();
+        bicepVideoView.setOnCompletionListener ( new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                bicepVideoView.start();
+            }
+        });
 
         Button joinButton = findViewById(R.id.join_button);
         joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bicepVideoView.stopPlayback();
-                //startActivity(new Intent(MainActivity.this, LogInActivity.class));
                 startActivity(new Intent(MainActivity.this, LogInActivity.class));
                 finish();
             }

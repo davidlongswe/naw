@@ -2,6 +2,8 @@ package com.umu.se.dalo0013.naw;
 
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.umu.se.dalo0013.naw.model.ArmwrestlingClub;
 import com.umu.se.dalo0013.naw.model.UserProfile;
 
@@ -59,7 +61,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import util.Config;
@@ -206,7 +210,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                         .position(userLatLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_icon))
                         .title(userInfo)
-                        .snippet(user.getProfilePictureUrl()));
+                        .snippet(user.getProfilePictureUrl())).setTag(user);
             }
             usersShowing = true;
         } else {
@@ -274,6 +278,13 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     public void onInfoWindowClick(Marker marker) {
         if((clubsShowing && !usersShowing)){
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(marker.getSnippet())));
+        }else{
+            Intent intent = new Intent(FindPartnerActivity.this, ChatActivity.class);
+            UserProfile user = (UserProfile)marker.getTag();
+            assert user != null;
+            intent.putExtra("username", user.getUserName());
+            intent.putExtra("id", user.getUserId());
+            startActivity(intent);
         }
     }
 

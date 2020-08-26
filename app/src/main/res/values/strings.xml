@@ -158,4 +158,5 @@
     <string name="Hand">Hand</string>
     <string name="here">here</string>
     <string name="hometown_create_prof">Hometown:</string>
+    <string name="chat_default_hint">Aa</string>
 </resources>

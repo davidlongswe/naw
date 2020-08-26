@@ -43,10 +43,8 @@ public class UserProfileActivity extends AppCompatActivity {
             profileClub;
 
     private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser currentUser;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private StorageReference storageReference;
     private CollectionReference collectionReference = db.collection("Profile");
 
     @Override
