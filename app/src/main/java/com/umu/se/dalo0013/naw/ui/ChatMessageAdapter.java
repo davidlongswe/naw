@@ -1,7 +1,6 @@
 package com.umu.se.dalo0013.naw.ui;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -9,23 +8,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.library.bubbleview.BubbleTextView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.umu.se.dalo0013.naw.R;
 import com.umu.se.dalo0013.naw.data.ChatMessage;
+
 import java.util.ArrayList;
 
 import util.UserProfileApi;
-
+/**
+ * ChatMessageAdapter - a custom recyclerview adapter for a list of chat messages
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.ViewHolder> {
 
     Context ctx;
     ArrayList<ChatMessage> messageList;
 
+    /**
+     * ChatMessageAdapter constructor
+     * @param context the context in which the adapter will inflate
+     * @param messList the list of chat messages the adapter will handle
+     */
     public ChatMessageAdapter(Context context, ArrayList<ChatMessage> messList) {
         this.ctx = context;
         this.messageList = messList;
@@ -38,11 +47,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         return new ViewHolder(itemView);
     }
 
+    /**
+     * onBindViewHolder - gets the chat message object from a specific position in the list,
+     * grabs it's contents and displays them on the screen.
+     * @param holder holds the views
+     * @param position position in the chat message object list
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ChatMessage chatMessage = messageList.get(position);
         holder.username.setText(chatMessage.getMessageUser());
         holder.userMessageTimeSent.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", chatMessage.getMessageTime()));
+        /* If chat message object in list is from contact, display on right side of screen
+        and change color of bubbleTextView */
         if(!chatMessage.getMessageUser().equals(UserProfileApi.getInstance().getUsername())){
             holder.contactMessageContent.setText(chatMessage.getMessageText());
             holder.contactMessageContent.setVisibility(View.VISIBLE);

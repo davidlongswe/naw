@@ -1,23 +1,20 @@
 package com.umu.se.dalo0013.naw;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.umu.se.dalo0013.naw.model.UserProfile;
 
@@ -26,9 +23,15 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import util.UserProfileApi;
-
+/**
+ * UserProfileActivity - an activity which displays the currently logged users profile
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class UserProfileActivity extends AppCompatActivity {
 
+    private static final String TAG = "UserProfileActivity";
     //View elements
     private CircleImageView profilePic;
     private TextView userName,
@@ -69,34 +72,30 @@ public class UserProfileActivity extends AppCompatActivity {
         currentUser = firebaseAuth.getCurrentUser();
     }
 
+    /**
+     * Retrieves user data from firebaseFireStore database using a collection reference
+     * and displays it for the user.
+     */
    @Override
     protected void onStart() {
         super.onStart();
         collectionReference.whereEqualTo("userId", UserProfileApi.getInstance().getUserId())
-                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    UserProfile userProfile = document.toObject(UserProfile.class);
-                    Picasso.get().load(userProfile.getProfilePictureUrl()).fit().into(profilePic);
-                    userBio.setText(userProfile.getBio());
-                    userName.setText(userProfile.getUserName());
-                    profileSex.setText(userProfile.getSex());
-                    profileHeight.setText(MessageFormat.format("{0} cm", userProfile.getHeight()));
-                    profileForearmSize.setText(MessageFormat.format("{0} cm", userProfile.getForearmSize()));
-                    profileBicepSize.setText(MessageFormat.format("{0} cm", userProfile.getBicepSize()));
-                    profileWeightClass.setText(userProfile.getWeightClass());
-                    profileHomeTown.setText(userProfile.getHomeTown());
-                    profileHand.setText(userProfile.getHand());
-                    profileClub.setText(userProfile.getClub());
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        UserProfile userProfile = document.toObject(UserProfile.class);
+                        Picasso.get().load(userProfile.getProfilePictureUrl()).fit().into(profilePic);
+                        userBio.setText(userProfile.getBio());
+                        userName.setText(userProfile.getUserName());
+                        profileSex.setText(userProfile.getSex());
+                        profileHeight.setText(MessageFormat.format("{0} cm", userProfile.getHeight()));
+                        profileForearmSize.setText(MessageFormat.format("{0} cm", userProfile.getForearmSize()));
+                        profileBicepSize.setText(MessageFormat.format("{0} cm", userProfile.getBicepSize()));
+                        profileWeightClass.setText(userProfile.getWeightClass());
+                        profileHomeTown.setText(userProfile.getHomeTown());
+                        profileHand.setText(userProfile.getHand());
+                        profileClub.setText(userProfile.getClub());
+                    }
+                }).addOnFailureListener(e -> Log.d(TAG, "onStart: "));
     }
 
     @Override

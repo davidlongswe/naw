@@ -1,6 +1,5 @@
 package com.umu.se.dalo0013.naw;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,11 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -56,19 +50,24 @@ import java.util.Objects;
 import util.Config;
 import util.LatLng;
 import util.UserProfileApi;
-
+/**
+ *
+ *
+ *
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class CreateUserProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "CreateUserProfileActivity";
-    //view elements
-    private TextView userName, addProfilePhotoTextView;
+    private TextView addProfilePhotoTextView;
     private LatLng userLocation;
     private EditText heightEditText,
         forearmEditText,
         bicepEditText,
         userBioEditText;
     private String homeTown;
-    private Button saveButton;
     private ImageButton profilePictureButton;
     private Spinner userSexSpinner;
     private Spinner weightClassSpinner;
@@ -91,7 +90,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser user;
 
-    //Connection to Firestore
+    //Connection to FireStore
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private StorageReference storageReference;
 
@@ -110,13 +109,14 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         Places.initialize(getApplicationContext(), Config.PLACES_API_KEY);
 
         userBioEditText = findViewById(R.id.user_bio_profile_create);
-        userName = findViewById(R.id.create_profile_username);
+        //view elements
+        TextView userName = findViewById(R.id.create_profile_username);
         addProfilePhotoTextView = findViewById(R.id.add_photo_text_view);
         heightEditText = findViewById(R.id.height_text_view_profile_creation);
         forearmEditText = findViewById(R.id.forearm_size_edit_text);
         bicepEditText = findViewById(R.id.bicep_size_edit_text);
         profileCreationProgressBar = findViewById(R.id.profile_creation_progress_bar);
-        saveButton = findViewById(R.id.create_acc_save_button);
+        Button saveButton = findViewById(R.id.create_acc_save_button);
         profilePictureButton = findViewById(R.id.profile_picture_button);
 
         profilePictureButton.setOnClickListener(this);
@@ -128,15 +128,12 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
             userName.setText(currentUserName);
         }
 
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                user = firebaseAuth.getCurrentUser();
-                if(user != null){
+        authStateListener = firebaseAuth -> {
+            user = firebaseAuth.getCurrentUser();
+            if(user != null){
 
-                }else{
+            }else{
 
-                }
             }
         };
 
@@ -210,6 +207,10 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         }
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     private void saveProfile() throws IOException {
         final String userBio = userBioEditText.getText().toString().trim();
         final String userSex = userSexSpinner.getSelectedItem().toString().trim();
@@ -239,71 +240,47 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
             bmp.compress(Bitmap.CompressFormat.JPEG, 25, baos);
             byte[] data = baos.toByteArray();
             final UploadTask uploadTask = filepath.putBytes(data);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                        @Override
-                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                            if (!task.isSuccessful()) {
-                                throw Objects.requireNonNull(task.getException());
-                            }
-                            // Continue with the task to get the download URL
-                            return filepath.getDownloadUrl();
-                        }
-                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            if (task.isSuccessful()) {
-                                String imageUrl = Objects.requireNonNull(task.getResult()).toString();
-                                UserProfile userProfile = new UserProfile();
-                                userProfile.setBio(userBio);
-                                userProfile.setProfilePictureUrl(imageUrl);
-                                userProfile.setSex(userSex);
-                                userProfile.setHeight(userHeight);
-                                userProfile.setForearmSize(userForearmSize);
-                                userProfile.setLastUpdated(new Timestamp(new Date()));
-                                userProfile.setWeightClass(userWeightClass);
-                                userProfile.setBicepSize(userBicepSize);
-                                userProfile.setUserLatLng(userLocation);
-                                userProfile.setHomeTown(homeTown);
-                                userProfile.setUserName(currentUserName);
-                                userProfile.setUserId(currentUserId);
-                                userProfile.setHand(userHand);
-                                userProfile.setClub(userClub);
+            uploadTask.addOnSuccessListener(taskSnapshot -> uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    throw Objects.requireNonNull(task.getException());
+                }
+                // Continue with the task to get the download URL
+                return filepath.getDownloadUrl();
+            }).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    String imageUrl = Objects.requireNonNull(task.getResult()).toString();
+                    UserProfile userProfile = new UserProfile();
+                    userProfile.setBio(userBio);
+                    userProfile.setProfilePictureUrl(imageUrl);
+                    userProfile.setSex(userSex);
+                    userProfile.setHeight(userHeight);
+                    userProfile.setForearmSize(userForearmSize);
+                    userProfile.setLastUpdated(new Timestamp(new Date()));
+                    userProfile.setWeightClass(userWeightClass);
+                    userProfile.setBicepSize(userBicepSize);
+                    userProfile.setUserLatLng(userLocation);
+                    userProfile.setHomeTown(homeTown);
+                    userProfile.setUserName(currentUserName);
+                    userProfile.setUserId(currentUserId);
+                    userProfile.setHand(userHand);
+                    userProfile.setClub(userClub);
 
-                                collectionReference.document(
-                                        user.getUid())
-                                        .set(userProfile)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        prolongProgressbarAnimation();
-                                        startActivity(
-                                                new Intent(
-                                                        CreateUserProfileActivity.this,
-                                                        HomePageActivity.class));
-                                        finish();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d("TAG", "onFailure: " + e.getMessage());
-                                    }
-                                });
-
-                            }
-                        }
-                    });
+                    collectionReference.document(
+                            user.getUid())
+                            .set(userProfile)
+                            .addOnSuccessListener(aVoid -> {
+                                prolongProgressbarAnimation();
+                                startActivity(
+                                        new Intent(
+                                                CreateUserProfileActivity.this,
+                                                HomePageActivity.class));
+                                finish();
+                            }).addOnFailureListener(e ->
+                            Log.d("TAG", "onFailure: " + e.getMessage()));
 
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(CreateUserProfileActivity.this,
-                            "Upload Failed -> " + e, Toast.LENGTH_LONG).show();
-                }
-            });
+            })).addOnFailureListener(e -> Toast.makeText(CreateUserProfileActivity.this,
+                    "Upload Failed -> " + e, Toast.LENGTH_LONG).show());
         }else{
             warnUserOfEmptyFields(userBio, userSex,
                     userHeight, userForearmSize,
@@ -314,6 +291,19 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         }
     }
 
+    /**
+     *
+     * @param userBio
+     * @param userSex
+     * @param userHeight
+     * @param userForearmSize
+     * @param userBicepSize
+     * @param userWeightClass
+     * @param homeTown
+     * @param imageUri
+     * @param userHand
+     * @param userClub
+     */
     private void warnUserOfEmptyFields(String userBio, String userSex, String userHeight,
                                   String userForearmSize, String userBicepSize,
                                   String userWeightClass, String homeTown, Uri imageUri,
@@ -344,7 +334,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
             weightErrorText.setText("Please choose a weight class!");
         }
         if(homeTown == null){
-            Toast.makeText(this, "Please enter your hometown", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter your hometown!", Toast.LENGTH_SHORT).show();
         }
         if(imageUri == null){
             addProfilePhotoTextView.setTextColor(Color.RED);
@@ -363,6 +353,9 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         }
     }
 
+    /**
+     *
+     */
     private void prolongProgressbarAnimation(){
         ObjectAnimator animation = ObjectAnimator.ofInt(profileCreationProgressBar,
                 "progress",
@@ -385,6 +378,12 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         animation.start();
     }
 
+    /**
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -396,6 +395,9 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         }
     }
 
+    /**
+     *
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -403,6 +405,9 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         firebaseAuth.addAuthStateListener(authStateListener);
     }
 
+    /**
+     *
+     */
     @Override
     protected void onStop() {
         super.onStop();

@@ -1,11 +1,5 @@
 package com.umu.se.dalo0013.naw;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,9 +7,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeApiServiceUtil;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.youtube.player.YouTubeIntents;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,22 +21,36 @@ import com.umu.se.dalo0013.naw.ui.YouTubeVideoRecyclerAdapter;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
+/**
+ *
+ *
+ *
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class HomePageActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
-    private RecyclerView tutVidsRecyclerView, popVidsRecyclerView;
-    private YouTubeVideoRecyclerAdapter youTubeVideoRecyclerAdapter;
-    private String[] tutorialVideoURL = {"2Arzt_SSqKc", "LZHp8Y_LFNo", "GI5MkygVTU4", "jGILF0kkY7Y", "K-ogCBZ5jNI"};
-    private String[] popularVideoURL = {"Rb2c6JmyFRU", "FNsJuoxB-TE", "IkkL-bAH8H4", "cefwt-dOLrg", "FoFCP2NxLRw", "Kb5eAt2BGkI"};
-    private CircleImageView armBetsTV,
-            armWrestlingTV,
-            devonLarratt,
-            globalArmWrestling,
-            ryanBowen,
-            swedenArmTV,
-            voa, wal;
-    private Button goToFindPartner;
+    //
+    private String[] tutorialVideoURL =
+            {
+                    "2Arzt_SSqKc",
+                    "LZHp8Y_LFNo",
+                    "GI5MkygVTU4",
+                    "jGILF0kkY7Y",
+                    "K-ogCBZ5jNI"
+            };
+    //
+    private String[] popularVideoURL =
+            {
+                    "Rb2c6JmyFRU",
+                    "FNsJuoxB-TE",
+                    "IkkL-bAH8H4",
+                    "cefwt-dOLrg",
+                    "FoFCP2NxLRw",
+                    "Kb5eAt2BGkI"
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +58,15 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_home_page);
         Objects.requireNonNull(getSupportActionBar()).setElevation(0);
 
-        armBetsTV = findViewById(R.id.arm_bets_tv_channel);
-        armWrestlingTV = findViewById(R.id.arm_wrestling_tv_channel);
-        devonLarratt = findViewById(R.id.devon_larratt_channel);
-        globalArmWrestling = findViewById(R.id.global_arm_wrestling_channel);
-        ryanBowen = findViewById(R.id.ryan_bowen_channel);
-        swedenArmTV = findViewById(R.id.sweden_arm_wrestling_tv_channel);
-        voa = findViewById(R.id.voice_of_arm_wrestling_channel);
-        wal = findViewById(R.id.wal_channel);
-        goToFindPartner = findViewById(R.id.go_to_map_from_home_page);
+        CircleImageView armBetsTV = findViewById(R.id.arm_bets_tv_channel);
+        CircleImageView armWrestlingTV = findViewById(R.id.arm_wrestling_tv_channel);
+        CircleImageView devonLarratt = findViewById(R.id.devon_larratt_channel);
+        CircleImageView globalArmWrestling = findViewById(R.id.global_arm_wrestling_channel);
+        CircleImageView ryanBowen = findViewById(R.id.ryan_bowen_channel);
+        CircleImageView swedenArmTV = findViewById(R.id.sweden_arm_wrestling_tv_channel);
+        CircleImageView voa = findViewById(R.id.voice_of_arm_wrestling_channel);
+        CircleImageView wal = findViewById(R.id.wal_channel);
+        Button goToFindPartner = findViewById(R.id.go_to_map_from_home_page);
 
         armBetsTV.setOnClickListener(this);
         armWrestlingTV.setOnClickListener(this);
@@ -67,29 +78,38 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         wal.setOnClickListener(this);
         goToFindPartner.setOnClickListener(this);
 
-
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
 
-        tutVidsRecyclerView = findViewById(R.id.tutorial_videos_recycler_view);
-        tutVidsRecyclerView.setHasFixedSize(true);
-        tutVidsRecyclerView.setLayoutManager(
-                new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        youTubeVideoRecyclerAdapter = new YouTubeVideoRecyclerAdapter(this, tutorialVideoURL);
-        tutVidsRecyclerView.setAdapter(youTubeVideoRecyclerAdapter);
-
-        popVidsRecyclerView = findViewById(R.id.popular_videos_recycler_view);
-        popVidsRecyclerView.setHasFixedSize(true);
-        popVidsRecyclerView.setLayoutManager(
-                new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        youTubeVideoRecyclerAdapter = new YouTubeVideoRecyclerAdapter(this, popularVideoURL);
-        popVidsRecyclerView.setAdapter(youTubeVideoRecyclerAdapter);
+        setUpTutorialVideoRecyclerView();
+        setUpPopularVideoRecyclerView();
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    /**
+     *
+     */
+    private void setUpPopularVideoRecyclerView() {
+        RecyclerView popVidsRecyclerView = findViewById(R.id.popular_videos_recycler_view);
+        popVidsRecyclerView.setHasFixedSize(true);
+        popVidsRecyclerView.setLayoutManager(
+                new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        YouTubeVideoRecyclerAdapter youTubeVideoRecyclerAdapter=
+                new YouTubeVideoRecyclerAdapter(this, popularVideoURL);
+        popVidsRecyclerView.setAdapter(youTubeVideoRecyclerAdapter);
+    }
+
+    /**
+     *
+     */
+    private void setUpTutorialVideoRecyclerView() {
+        RecyclerView tutVidsRecyclerView = findViewById(R.id.tutorial_videos_recycler_view);
+        tutVidsRecyclerView.setHasFixedSize(true);
+        tutVidsRecyclerView.setLayoutManager(
+                new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        YouTubeVideoRecyclerAdapter youTubeVideoRecyclerAdapter =
+                new YouTubeVideoRecyclerAdapter(this, tutorialVideoURL);
+        tutVidsRecyclerView.setAdapter(youTubeVideoRecyclerAdapter);
     }
 
     @Override
@@ -111,13 +131,11 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
             case R.id.action_find_partner:
                 if(currentUser != null && firebaseAuth != null){
                     startActivity(new Intent(HomePageActivity.this, FindPartnerActivity.class));
-                    finish();
                 }
                 break;
             case R.id.action_profile:
                 if(currentUser != null && firebaseAuth != null){
                     startActivity(new Intent(HomePageActivity.this, UserProfileActivity.class));
-                    finish();
                 }
                 break;
             case R.id.action_signout:
@@ -132,13 +150,16 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         switch(v.getId()){
             case(R.id.go_to_map_from_home_page):
                 v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));
                 startActivity(new Intent(HomePageActivity.this, FindPartnerActivity.class));
-                finish();
                 break;
             case(R.id.arm_bets_tv_channel):
                 v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.image_on_click_animation));

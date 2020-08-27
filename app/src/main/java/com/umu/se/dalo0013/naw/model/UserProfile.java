@@ -1,10 +1,13 @@
 package com.umu.se.dalo0013.naw.model;
 
-import android.net.Uri;
-
-import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.Timestamp;
-
+/**
+ * UserProfile - each user has their own profile, this class contains the essential data
+ * which each user needs.
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class UserProfile {
 
     private String profilePictureUrl;
@@ -22,9 +25,26 @@ public class UserProfile {
     private String hand;
     private String club;
 
-    public UserProfile() { //Must for firestore to work
+    public UserProfile() {
     }
 
+    /**
+     * UserProfile constructor
+     * @param profilePictureUrl link to profile picture available on fireStore
+     * @param userId the user id
+     * @param lastUpdated when the user profile was last updated
+     * @param height the user height
+     * @param userName the user username
+     * @param sex the users sex
+     * @param weightClass the users weight class
+     * @param forearmSize the users forearm size
+     * @param bicepSize the users bicep size
+     * @param homeTown the users hometown
+     * @param userLatLng the users location on a map
+     * @param bio the users bio
+     * @param hand the users hands
+     * @param club the users arm wrestling club
+     */
     public UserProfile(String profilePictureUrl, String userId, Timestamp lastUpdated,
                        String height, String userName, String sex,
                        String weightClass, String forearmSize, String bicepSize,

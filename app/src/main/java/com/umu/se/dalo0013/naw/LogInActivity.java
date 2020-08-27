@@ -1,11 +1,6 @@
 package com.umu.se.dalo0013.naw;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,39 +11,34 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Objects;
 
 import util.UserProfileApi;
-
+/**
+ *
+ *
+ *
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class LogInActivity extends AppCompatActivity {
 
-    private Button logInButton;
-    private Button createAccountButton;
-    private AutoCompleteTextView emailAdress;
+    private AutoCompleteTextView emailAddress;
     private EditText passwordEditText;
     private ProgressBar progressbarLogIn;
 
     private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseUser currentUser;
-
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = db.collection("Users");
 
@@ -59,96 +49,86 @@ public class LogInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_log_in);
         Objects.requireNonNull(getSupportActionBar()).setElevation(0);
 
-        logInButton = findViewById(R.id.email_sign_in_button);
-        createAccountButton = findViewById(R.id.create_account_button_login);
-        emailAdress = findViewById(R.id.email);
+        Button logInButton = findViewById(R.id.email_sign_in_button);
+        Button createAccountButton = findViewById(R.id.create_account_button_login);
+        emailAddress = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         progressbarLogIn = findViewById(R.id.progressbar_login);
         progressbarLogIn.setVisibility(View.INVISIBLE);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        createAccountButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LogInActivity.this, CreateAccountActivity.class));
-            }
-        });
+        createAccountButton.setOnClickListener(v ->
+                startActivity(new Intent(LogInActivity.this,
+                        CreateAccountActivity.class)));
 
-        logInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginEmailPasswordUser(emailAdress.getText().toString().trim(),
-                        passwordEditText.getText().toString().trim());
-            }
-        });
+        logInButton.setOnClickListener(v ->
+                loginEmailPasswordUser(emailAddress.getText().toString().trim(),
+                passwordEditText.getText().toString().trim()));
     }
 
+    /**
+     *
+     * @param email
+     * @param password
+     */
     private void loginEmailPasswordUser(final String email, final String password) {
         progressbarLogIn.setVisibility(View.VISIBLE);
         if (!TextUtils.isEmpty(email)
                 && !TextUtils.isEmpty(password)) {
             firebaseAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                FirebaseUser user = firebaseAuth.getCurrentUser();
-                                assert user != null;
-                                final String currentUserId = user.getUid();
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            assert user != null;
+                            final String currentUserId = user.getUid();
 
-                                collectionReference
-                                        .whereEqualTo("userId", currentUserId)
-                                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots,
-                                                                @Nullable FirebaseFirestoreException e) {
-                                                if (e != null) {
-                                                    Log.d("LogInActivity", "onEvent: "
-                                                            + e.getLocalizedMessage());
-                                                }
-                                                assert queryDocumentSnapshots != null;
-                                                if (!queryDocumentSnapshots.isEmpty()) {
-                                                    progressbarLogIn.setVisibility(View.INVISIBLE);
-                                                    for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                                                        UserProfileApi userProfileApi = UserProfileApi.getInstance();
-                                                        userProfileApi.setUsername(snapshot.getString("username"));
-                                                        userProfileApi.setUserId(snapshot.getString("userId"));
-                                                    }
-                                                    //Go to ListActivity
-                                                    startActivity(new Intent(LogInActivity.this,
-                                                            HomePageActivity.class));
-                                                }
+                            collectionReference
+                                    .whereEqualTo("userId", currentUserId)
+                                    .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                                        if (e != null) {
+                                            Log.d("LogInActivity", "onEvent: "
+                                                    + e.getLocalizedMessage());
+                                        }
+                                        assert queryDocumentSnapshots != null;
+                                        if (!queryDocumentSnapshots.isEmpty()) {
+                                            progressbarLogIn.setVisibility(View.INVISIBLE);
+                                            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                                UserProfileApi userProfileApi = UserProfileApi.getInstance();
+                                                userProfileApi.setUsername(snapshot.getString("username"));
+                                                userProfileApi.setUserId(snapshot.getString("userId"));
                                             }
-                                        });
-                            } else {
-                                progressbarLogIn.setVisibility(View.INVISIBLE);
-                                try
-                                {
-                                    throw Objects.requireNonNull(task.getException());
-                                }
-                                catch (FirebaseAuthInvalidCredentialsException malformedEmail)
-                                {
-                                    passwordEditText.setError("Invalid password!");
-                                }
-                                catch (FirebaseAuthInvalidUserException existEmail)
-                                {
-                                    emailAdress.setError("Invalid email address!");
-                                }
-                                catch (Exception e)
-                                {
-                                    Log.d("CreateAccountActivity",
-                                            "onComplete: " + e.getMessage());
-                                }
+                                            //Go to ListActivity
+                                            startActivity(new Intent(LogInActivity.this,
+                                                    HomePageActivity.class));
+                                            finish();
+                                        }
+                                    });
+                        } else {
+                            progressbarLogIn.setVisibility(View.INVISIBLE);
+                            try
+                            {
+                                throw Objects.requireNonNull(task.getException());
+                            }
+                            catch (FirebaseAuthInvalidCredentialsException malformedEmail)
+                            {
+                                passwordEditText.setError("Invalid password!");
+                            }
+                            catch (FirebaseAuthInvalidUserException existEmail)
+                            {
+                                emailAddress.setError("Invalid email address!");
+                            }
+                            catch (Exception e)
+                            {
+                                Log.d("CreateAccountActivity",
+                                        "onComplete: " + e.getMessage());
                             }
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressbarLogIn.setVisibility(View.INVISIBLE);
-                    Toast.makeText(LogInActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                    }).addOnFailureListener(e -> {
+                        progressbarLogIn.setVisibility(View.INVISIBLE);
+                        Toast.makeText(LogInActivity.this,
+                                e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    });
         }else{
             progressbarLogIn.setVisibility(View.INVISIBLE);
             Toast.makeText(LogInActivity.this,

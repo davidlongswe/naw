@@ -1,7 +1,12 @@
 package util;
 
 import android.app.Application;
-
+/**
+ * UserProfileApi - A helper class to easily obtain the logged in users essential details
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class UserProfileApi extends Application {
     private String username;
     private String userId;

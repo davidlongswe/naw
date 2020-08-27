@@ -32,7 +32,14 @@ import java.util.Map;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import util.UserProfileApi;
-
+/**
+ *
+ *
+ *
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class ChatActivity extends AppCompatActivity {
 
     private static final String TAG = "ChatActivity";
@@ -41,9 +48,6 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private DatabaseReference root;
     private EmojiconEditText emojiconEditText;
-    private ImageView emojiButton, submitButton;
-    private EmojIconActions emojIconActions;
-    private RelativeLayout linearLayout;
     private ChatMessageAdapter chatMessageAdapter;
     private ArrayList<ChatMessage> chatMessages;
     private RecyclerView chatMessageRecyclerView;
@@ -65,21 +69,16 @@ public class ChatActivity extends AppCompatActivity {
         assert contactUserId != null;
         generateUniqueKey(contactUserId);
 
-        linearLayout = findViewById(R.id.chat_activity_layout);
-        emojiButton = findViewById(R.id.emoticon_button);
-        submitButton = findViewById(R.id.send_message_button);
+        RelativeLayout linearLayout = findViewById(R.id.chat_activity_layout);
+        ImageView emojiButton = findViewById(R.id.emoticon_button);
+        ImageView submitButton = findViewById(R.id.send_message_button);
         emojiconEditText = findViewById(R.id.emoticon_edit_text);
-        emojIconActions = new EmojIconActions(getApplicationContext(), linearLayout, emojiconEditText, emojiButton);
+        EmojIconActions emojIconActions = new EmojIconActions(getApplicationContext(), linearLayout, emojiconEditText, emojiButton);
         emojIconActions.ShowEmojIcon();
 
         setUpChatRecyclerView();
 
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitMessageAndUpdateFireStore(v);
-            }
-        });
+        submitButton.setOnClickListener(this::submitMessageAndUpdateFireStore);
 
         root.addChildEventListener(new ChildEventListener() {
             @Override
@@ -109,6 +108,10 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     *
+     * @param contactId
+     */
     private void generateUniqueKey(String contactId) {
         assert contactId != null;
         String oneToOneRoomId = currentUser.getUid() + "_" + contactId;
@@ -126,6 +129,10 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     *
+     * @param v
+     */
     private void submitMessageAndUpdateFireStore(View v) {
         v.startAnimation(AnimationUtils.loadAnimation(ChatActivity.this, R.anim.image_on_click_animation));
         String enteredText = emojiconEditText.getText().toString().trim();
@@ -145,6 +152,9 @@ public class ChatActivity extends AppCompatActivity {
         emojiconEditText.setFocusable(true);
     }
 
+    /**
+     *
+     */
     private void setUpChatRecyclerView() {
         chatMessageRecyclerView = findViewById(R.id.chat_recycler_view);
         chatMessageRecyclerView.setHasFixedSize(true);
@@ -154,6 +164,10 @@ public class ChatActivity extends AppCompatActivity {
         chatMessageRecyclerView.setAdapter(chatMessageAdapter);
     }
 
+    /**
+     *
+     * @param snapshot
+     */
     private void appendConversation(DataSnapshot snapshot) {
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
             Iterator i = dataSnapshot.getChildren().iterator();
@@ -168,6 +182,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -181,6 +196,7 @@ public class ChatActivity extends AppCompatActivity {
             case R.id.action_home:
                 if(currentUser != null && firebaseAuth != null){
                     startActivity(new Intent(ChatActivity.this, HomePageActivity.class));
+                    finish();
                 }
                 break;
             case R.id.action_find_partner:

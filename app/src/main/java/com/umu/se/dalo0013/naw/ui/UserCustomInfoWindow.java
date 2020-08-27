@@ -19,16 +19,21 @@ import com.umu.se.dalo0013.naw.model.UserProfile;
 import java.text.MessageFormat;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
+/**
+ * UserCustomInfoWindow - a custom info window for when a user is pressed on the map, for use with
+ * google maps api
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class UserCustomInfoWindow implements GoogleMap.InfoWindowAdapter {
     private static final String TAG = "CustomInfoWindow";
     private View view;
-    private LayoutInflater layoutInflater;
     private Context context;
 
     public UserCustomInfoWindow(Context context) {
         this.context = context;
-        layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert layoutInflater != null;
         view = layoutInflater.inflate(R.layout.custom_info_window, null);
     }
@@ -78,9 +83,13 @@ public class UserCustomInfoWindow implements GoogleMap.InfoWindowAdapter {
         return view;
     }
 
+    /**
+     * Hide and show info window incase of populated images not having
+     * loaded in time.
+     */
     static class MarkerCallback implements Callback
     {
-        Marker marker = null;
+        Marker marker;
         MarkerCallback(Marker marker)
         {
             this.marker = marker;

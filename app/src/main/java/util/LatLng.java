@@ -1,5 +1,10 @@
 package util;
-
+/**
+ * A custom LatLng class, necessary for storing locations in the fireStore database
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class LatLng {
     private Double longitude;
     private Double latitude;

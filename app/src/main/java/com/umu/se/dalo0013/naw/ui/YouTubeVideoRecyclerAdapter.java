@@ -19,7 +19,13 @@ import com.google.android.youtube.player.YouTubeThumbnailView;
 import com.umu.se.dalo0013.naw.R;
 
 import util.Config;
-
+/**
+ *
+ *
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class YouTubeVideoRecyclerAdapter extends RecyclerView.Adapter<YouTubeVideoRecyclerAdapter.VideoInfoHolder> {
 
     private String[] videoURL;

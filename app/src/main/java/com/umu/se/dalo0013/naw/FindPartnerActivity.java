@@ -1,11 +1,10 @@
 package com.umu.se.dalo0013.naw;
 
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-import com.umu.se.dalo0013.naw.model.ArmwrestlingClub;
+import com.umu.se.dalo0013.naw.model.ArmWrestlingClub;
 import com.umu.se.dalo0013.naw.model.UserProfile;
 
 import androidx.annotation.NonNull;
@@ -44,8 +43,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -58,7 +55,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.umu.se.dalo0013.naw.ui.ClubCustomInfoWindow;
 import com.umu.se.dalo0013.naw.ui.UserCustomInfoWindow;
 
@@ -76,9 +72,14 @@ import java.util.Objects;
 
 import util.Config;
 import util.UserProfileApi;
-
-import static java.security.AccessController.getContext;
-
+/**
+ *
+ *
+ *
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class FindPartnerActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, View.OnClickListener {
 
@@ -92,7 +93,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference collectionReference = db.collection("Profile");
 
-    private ArrayList<ArmwrestlingClub> armWrestlingClubs;
+    private ArrayList<ArmWrestlingClub> armWrestlingClubs;
     private ArrayList<UserProfile> users;
     private ArrayList<Bitmap> profilePictures;
 
@@ -101,7 +102,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     private boolean usersButtonPressed = false;
     private boolean usersShowing = false;
 
-    private Button userButton, searchButton, clubButton;
     private ProgressBar loadingBar;
 
     @Override
@@ -121,19 +121,22 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        clubButton = findViewById(R.id.club_map_button);
-        searchButton = findViewById(R.id.search_map_button);
-        userButton = findViewById(R.id.user_map_button);
+        Button clubButton = findViewById(R.id.club_map_button);
+        Button searchButton = findViewById(R.id.search_map_button);
+        Button userButton = findViewById(R.id.user_map_button);
         loadingBar = findViewById(R.id.images_loading_progress_bar);
 
         clubButton.setOnClickListener(this);
         searchButton.setOnClickListener(this);
         userButton.setOnClickListener(this);
-
     }
 
+    /**
+     *
+     * @return
+     */
     private String loadJSONFromRaw() {
-        String json = null;
+        String json;
         try {
             InputStream is = getResources().openRawResource(R.raw.clubs);
             int size = is.available();
@@ -148,13 +151,16 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         return json;
     }
 
+    /**
+     *
+     */
     private void getArmWrestlingClubs() {
         armWrestlingClubs = new ArrayList<>();
         try {
             JSONObject obj = new JSONObject(Objects.requireNonNull(loadJSONFromRaw()));
             JSONArray clubArray = obj.getJSONArray("clubs");
             for (int i = 0; i < clubArray.length(); i++) {
-                ArmwrestlingClub awc = new ArmwrestlingClub();
+                ArmWrestlingClub awc = new ArmWrestlingClub();
                 JSONObject club = clubArray.getJSONObject(i);
                 awc.setClubInfoURL(club.getString("link"));
                 awc.setClubName(club.getString("name"));
@@ -168,10 +174,13 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         }
     }
 
+    /**
+     *
+     */
     private void toggleArmWrestlingClubs() {
         if(clubButtonPressed && !clubsShowing) {
             mMap.setInfoWindowAdapter(new ClubCustomInfoWindow(this));
-            for (ArmwrestlingClub club : armWrestlingClubs) {
+            for (ArmWrestlingClub club : armWrestlingClubs) {
                 double clubLat = Double.parseDouble(club.getClubLocLatitude());
                 double clubLong = Double.parseDouble(club.getClubLocLongitude());
                 LatLng clubLatLng = new LatLng(clubLat, clubLong);
@@ -188,6 +197,10 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
             usersShowing = false;
         }
     }
+
+    /**
+     *
+     */
     private void getUsers(){
         users = new ArrayList<>();
         profilePictures = new ArrayList<>();
@@ -213,7 +226,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                                     }
                                     @Override
                                     public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                                        Toast.makeText(FindPartnerActivity.this, "FAILED" +e.getMessage() , Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(FindPartnerActivity.this,
+                                                "FAILED" +e.getMessage() , Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override
@@ -235,6 +249,10 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 });
     }
 
+    /**
+     *
+     * @param loading
+     */
     public void imagesLoading(boolean loading){
         if(loading){
             loadingBar.setVisibility(View.VISIBLE);
@@ -243,8 +261,11 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         }
     }
 
-
-
+    /**
+     *
+     * @param bitmap
+     * @return
+     */
     public Bitmap getCroppedBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
                 bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -257,14 +278,16 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
-                bitmap.getWidth() / 2, paint);
+        canvas.drawCircle((float)bitmap.getWidth() / 2, (float)bitmap.getHeight() / 2,
+                (float)bitmap.getWidth() / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
         return output;
     }
 
-
+    /**
+     *
+     */
     private void toggleUsersShown() {
         if (usersButtonPressed && !usersShowing) {
             mMap.setInfoWindowAdapter(new UserCustomInfoWindow(this));
@@ -298,7 +321,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        //setCameraBounds();
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
@@ -313,13 +335,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         }
     }
 
-    private void setCameraBounds(){
-        LatLng southWestBound = new LatLng(52.262942, -23.030901);
-        LatLng northEastBound = new LatLng(71.952943, 40.064378);
-        LatLngBounds nord = new LatLngBounds(southWestBound, northEastBound);
-        mMap.setLatLngBoundsForCameraTarget(nord);
-    }
-
+    /**
+     *
+     */
     @Override
     protected void onStart(){
         super.onStart();
@@ -327,19 +345,23 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         getArmWrestlingClubs();
     }
 
+    /**
+     *
+     * @param marker
+     * @return
+     */
     @Override
     public boolean onMarkerClick(final Marker marker) {
         marker.showInfoWindow();
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                marker.showInfoWindow();
-            }
-        }, 200);
+        handler.postDelayed(marker::showInfoWindow, 200);
        return false;
     }
 
+    /**
+     *
+     * @param marker
+     */
     @Override
     public void onInfoWindowClick(Marker marker) {
         if((clubsShowing && !usersShowing)){
@@ -352,11 +374,13 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 intent.putExtra("username", user.getUserName());
                 intent.putExtra("id", user.getUserId());
                 startActivity(intent);
-                finish();
             }
         }
     }
 
+    /**
+     *
+     */
     private void search(){
         List<Place.Field> fields = Arrays.asList(
                 Place.Field.ID,
@@ -372,6 +396,12 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
     }
 
+    /**
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -431,6 +461,10 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         switch(v.getId()) {

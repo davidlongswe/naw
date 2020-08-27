@@ -1,28 +1,26 @@
 package com.umu.se.dalo0013.naw;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.VideoView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import util.UserProfileApi;
-
+/**
+ * MainActivity - A welcome screen for new users, which is bypassed by logging in on a device
+ * @author  David Elfving Long
+ * @version 1.0
+ * @since   2020-08-27
+ */
 public class MainActivity extends AppCompatActivity {
 
     private VideoView armWrestlingVideoView;
@@ -43,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
             if(currentUser != null){
                 currentUser = firebaseAuth.getCurrentUser();
                 String currentUserId = currentUser.getUid();
+                /*
+                 * Go to HomePageActivity directly if user has previously logged in on device.
+                 */
                 collectionReference.whereEqualTo("userId", currentUserId).addSnapshotListener((value, error) -> {
                     if(error != null){
                         return;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         armWrestlingVideoView.setOnCompletionListener (mediaPlayer -> armWrestlingVideoView.start());
 
         Button joinButton = findViewById(R.id.join_button);
+        //Go to LogInActivity if user hasn't already logged in on device
         joinButton.setOnClickListener(v -> {
             armWrestlingVideoView.stopPlayback();
             startActivity(new Intent(MainActivity.this, LogInActivity.class));
