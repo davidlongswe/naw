@@ -2,8 +2,9 @@ package com.umu.se.dalo0013.naw;
 
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.umu.se.dalo0013.naw.model.ArmwrestlingClub;
 import com.umu.se.dalo0013.naw.model.UserProfile;
 
@@ -15,6 +16,13 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,7 +30,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -61,12 +71,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import util.Config;
+import util.UserProfileApi;
+
+import static java.security.AccessController.getContext;
 
 public class FindPartnerActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, View.OnClickListener {
@@ -83,6 +94,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
 
     private ArrayList<ArmwrestlingClub> armWrestlingClubs;
     private ArrayList<UserProfile> users;
+    private ArrayList<Bitmap> profilePictures;
 
     private boolean clubButtonPressed = false;
     private boolean clubsShowing = false;
@@ -90,6 +102,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     private boolean usersShowing = false;
 
     private Button userButton, searchButton, clubButton;
+    private ProgressBar loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,10 +124,12 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         clubButton = findViewById(R.id.club_map_button);
         searchButton = findViewById(R.id.search_map_button);
         userButton = findViewById(R.id.user_map_button);
+        loadingBar = findViewById(R.id.images_loading_progress_bar);
 
         clubButton.setOnClickListener(this);
         searchButton.setOnClickListener(this);
         userButton.setOnClickListener(this);
+
     }
 
     private String loadJSONFromRaw() {
@@ -175,42 +190,93 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
     private void getUsers(){
         users = new ArrayList<>();
-        collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    UserProfile userProfile = document.toObject(UserProfile.class);
-                    users.add(userProfile);
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+        profilePictures = new ArrayList<>();
+        collectionReference.get().addOnSuccessListener(
+                queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        final UserProfile userProfile = document.toObject(UserProfile.class);
+                        imagesLoading(true);
+                        Picasso.get().load(userProfile.getProfilePictureUrl()).fetch(new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Target mTarget;
+                                mTarget = new Target() {
+                                    @Override
+                                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                        if (bitmap == null) {
+                                            Log.w(TAG, "Null");
+                                        } else {
+                                            Bitmap croppedBitmap = getCroppedBitmap(bitmap);
+                                            profilePictures.add(croppedBitmap);
+                                            users.add(userProfile);
+                                        }
+                                    }
+                                    @Override
+                                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                                        Toast.makeText(FindPartnerActivity.this, "FAILED" +e.getMessage() , Toast.LENGTH_SHORT).show();
+                                    }
 
-            }
-        });
+                                    @Override
+                                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                                        Log.i(TAG, "Prepare");
+                                    }
+                                };
+                                Picasso.get().load(userProfile.getProfilePictureUrl())
+                                        .resize(120, 120).into(mTarget);
+                                imagesLoading(false);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Log.d(TAG, "onError: " + e.getMessage());
+                            }
+                        });
+                    }
+                });
     }
+
+    public void imagesLoading(boolean loading){
+        if(loading){
+            loadingBar.setVisibility(View.VISIBLE);
+        }else{
+            loadingBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+
+
+    public Bitmap getCroppedBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return output;
+    }
+
 
     private void toggleUsersShown() {
         if (usersButtonPressed && !usersShowing) {
             mMap.setInfoWindowAdapter(new UserCustomInfoWindow(this));
-            for (UserProfile user : users) {
-                Double userLatitude = user.getUserLatLng().getLatitude();
-                Double userLongitude = user.getUserLatLng().getLongitude();
+            for(int i = 0; i < users.size(); i++){
+                Double userLatitude = users.get(i).getUserLatLng().getLatitude();
+                Double userLongitude = users.get(i).getUserLatLng().getLongitude();
                 LatLng userLatLng = new LatLng(userLongitude, userLatitude);
-                String userInfo = "Username: " + user.getUserName() + "\n"
-                        + "Sex: " + user.getSex() + "\n"
-                        + "Height: " + user.getHeight() + " cm" + "\n"
-                        + "Forearm: " + user.getForearmSize() + " cm" + "\n"
-                        + "Bicep: " + user.getBicepSize() + " cm" + "\n"
-                        + "Weight class: " + user.getWeightClass() + "\n"
-                        + "Hand: " + user.getHand() + "\n"
-                        + "Club: " + user.getClub() + "\n";
+
                 mMap.addMarker(new MarkerOptions()
                         .position(userLatLng)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_icon))
-                        .title(userInfo)
-                        .snippet(user.getProfilePictureUrl())).setTag(user);
+                        .icon(BitmapDescriptorFactory.fromBitmap(profilePictures.get(i)))
+                        .snippet(users.get(i).getProfilePictureUrl())).setTag(users.get(i));
             }
             usersShowing = true;
         } else {
@@ -232,7 +298,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        setCameraBounds();
+        //setCameraBounds();
         mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMarkerClickListener(this);
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
@@ -282,9 +348,12 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
             Intent intent = new Intent(FindPartnerActivity.this, ChatActivity.class);
             UserProfile user = (UserProfile)marker.getTag();
             assert user != null;
-            intent.putExtra("username", user.getUserName());
-            intent.putExtra("id", user.getUserId());
-            startActivity(intent);
+            if(!user.getUserName().equals(UserProfileApi.getInstance().getUsername())){
+                intent.putExtra("username", user.getUserName());
+                intent.putExtra("id", user.getUserId());
+                startActivity(intent);
+                finish();
+            }
         }
     }
 
@@ -366,14 +435,17 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.user_map_button:
+                v.startAnimation(AnimationUtils.loadAnimation(FindPartnerActivity.this, R.anim.image_on_click_animation));
                 usersButtonPressed = true;
                 toggleUsersShown();
                 break;
             case R.id.club_map_button:
+                v.startAnimation(AnimationUtils.loadAnimation(FindPartnerActivity.this, R.anim.image_on_click_animation));
                 clubButtonPressed = true;
                 toggleArmWrestlingClubs();
                 break;
             case R.id.search_map_button:
+                v.startAnimation(AnimationUtils.loadAnimation(FindPartnerActivity.this, R.anim.image_on_click_animation));
                 search();
                 break;
         }

@@ -7,7 +7,7 @@
     tools:context=".MainActivity"
     android:orientation="vertical">
     <VideoView
-        android:id="@+id/bicep_video_view"
+        android:id="@+id/armWrestling_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"

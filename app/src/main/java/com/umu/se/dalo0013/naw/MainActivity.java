@@ -25,7 +25,7 @@ import util.UserProfileApi;
 
 public class MainActivity extends AppCompatActivity {
 
-    private VideoView bicepVideoView;
+    private VideoView armWrestlingVideoView;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser currentUser;
@@ -38,55 +38,40 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        authStateListener = firebaseAuth -> {
+            currentUser = firebaseAuth.getCurrentUser();
+            if(currentUser != null){
                 currentUser = firebaseAuth.getCurrentUser();
-                if(currentUser != null){
-                    currentUser = firebaseAuth.getCurrentUser();
-                    String currentUserId = currentUser.getUid();
-                    collectionReference.whereEqualTo("userId", currentUserId).addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                            if(error != null){
-                                return;
-                            }
-                            assert value != null;
-                            if(!value.isEmpty()){
-                                for(QueryDocumentSnapshot snapshot : value){
-                                    UserProfileApi userProfileApi = UserProfileApi.getInstance();
-                                    userProfileApi.setUserId(snapshot.getString("userId"));
-                                    userProfileApi.setUsername(snapshot.getString("username"));
-                                    startActivity(new Intent(MainActivity.this, HomePageActivity.class));
-                                    finish();
-                                }
-                            }
+                String currentUserId = currentUser.getUid();
+                collectionReference.whereEqualTo("userId", currentUserId).addSnapshotListener((value, error) -> {
+                    if(error != null){
+                        return;
+                    }
+                    assert value != null;
+                    if(!value.isEmpty()){
+                        for(QueryDocumentSnapshot snapshot : value){
+                            UserProfileApi userProfileApi = UserProfileApi.getInstance();
+                            userProfileApi.setUserId(snapshot.getString("userId"));
+                            userProfileApi.setUsername(snapshot.getString("username"));
+                            startActivity(new Intent(MainActivity.this, HomePageActivity.class));
+                            finish();
                         }
-                    });
-                }
+                    }
+                });
             }
         };
 
-        //Source: https://www.pexels.com/video/a-man-building-his-muscle-by-exercising-with-dumbbells-4115126/
-        bicepVideoView = findViewById(R.id.bicep_video_view);
+        armWrestlingVideoView = findViewById(R.id.armWrestling_video_view);
         Uri bicepVideoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.armwrestle_dev);
-        bicepVideoView.setVideoURI(bicepVideoUri);
-        bicepVideoView.start();
-        bicepVideoView.setOnCompletionListener ( new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                bicepVideoView.start();
-            }
-        });
+        armWrestlingVideoView.setVideoURI(bicepVideoUri);
+        armWrestlingVideoView.start();
+        armWrestlingVideoView.setOnCompletionListener (mediaPlayer -> armWrestlingVideoView.start());
 
         Button joinButton = findViewById(R.id.join_button);
-        joinButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bicepVideoView.stopPlayback();
-                startActivity(new Intent(MainActivity.this, LogInActivity.class));
-                finish();
-            }
+        joinButton.setOnClickListener(v -> {
+            armWrestlingVideoView.stopPlayback();
+            startActivity(new Intent(MainActivity.this, LogInActivity.class));
+            finish();
         });
     }
 

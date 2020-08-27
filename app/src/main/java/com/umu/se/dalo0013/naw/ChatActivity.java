@@ -2,6 +2,8 @@ package com.umu.se.dalo0013.naw;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -61,17 +63,7 @@ public class ChatActivity extends AppCompatActivity {
         String contactUserId = intent.getStringExtra("id");
 
         assert contactUserId != null;
-        String oneToOneRoomId = currentUser.getUid() + "_" + contactUserId;
-        String oneToOneRoomIdReversed = contactUserId + "_" + currentUser.getUid();
-        if(currentUser.getUid().charAt(0) < contactUserId.charAt(0)){
-            root = database.getReference().getRoot().child(oneToOneRoomId);
-        }else if(currentUser.getUid().charAt(0) == contactUserId.charAt(0)) {
-            if (currentUser.getUid().charAt(7) < contactUserId.charAt(7)) {
-                root = database.getReference().getRoot().child(oneToOneRoomId);
-            }
-        } else{
-            root = database.getReference().getRoot().child(oneToOneRoomIdReversed);
-        }
+        generateUniqueKey(contactUserId);
 
         linearLayout = findViewById(R.id.chat_activity_layout);
         emojiButton = findViewById(R.id.emoticon_button);
@@ -117,6 +109,23 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void generateUniqueKey(String contactId) {
+        assert contactId != null;
+        String oneToOneRoomId = currentUser.getUid() + "_" + contactId;
+        String oneToOneRoomIdReversed = contactId + "_" + currentUser.getUid();
+        if(currentUser.getUid().charAt(0) < contactId.charAt(0)){
+            root = database.getReference().getRoot().child(oneToOneRoomId);
+        }else if(currentUser.getUid().charAt(0) == contactId.charAt(0)) {
+            if (currentUser.getUid().charAt(7) < contactId.charAt(7)) {
+                root = database.getReference().getRoot().child(oneToOneRoomId);
+            }
+        } else if(currentUser.getUid().equals(contactId)) {
+            root = database.getReference().getRoot().child(currentUser.getUid());
+        }else{
+            root = database.getReference().getRoot().child(oneToOneRoomIdReversed);
+        }
+    }
+
     private void submitMessageAndUpdateFireStore(View v) {
         v.startAnimation(AnimationUtils.loadAnimation(ChatActivity.this, R.anim.image_on_click_animation));
         String enteredText = emojiconEditText.getText().toString().trim();
@@ -158,6 +167,44 @@ public class ChatActivity extends AppCompatActivity {
                 chatMessageRecyclerView.scrollToPosition(chatMessages.size() - 1);
             }
         }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch(item.getItemId()){
+            case R.id.action_home:
+                if(currentUser != null && firebaseAuth != null){
+                    startActivity(new Intent(ChatActivity.this, HomePageActivity.class));
+                }
+                break;
+            case R.id.action_find_partner:
+                if(currentUser != null && firebaseAuth != null){
+                    startActivity(new Intent(ChatActivity.this, FindPartnerActivity.class));
+                    finish();
+                }
+                break;
+            case R.id.action_profile:
+                if(currentUser != null && firebaseAuth != null){
+                    startActivity(new Intent(ChatActivity.this, UserProfileActivity.class));
+                    finish();
+                }
+                break;
+            case R.id.action_signout:
+                if(currentUser != null && firebaseAuth != null) {
+                    firebaseAuth.signOut();
+                    startActivity(new Intent(ChatActivity.this, MainActivity.class));
+                    finish();
+                }
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }
