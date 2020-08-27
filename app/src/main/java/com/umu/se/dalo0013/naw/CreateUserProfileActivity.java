@@ -2,9 +2,11 @@ package com.umu.se.dalo0013.naw;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -51,8 +53,7 @@ import util.Config;
 import util.LatLng;
 import util.UserProfileApi;
 /**
- *
- *
+ * CreateUserProfileActivity - creates a user profile and stores it in a cloud database
  *
  * @author  David Elfving Long
  * @version 1.0
@@ -61,6 +62,8 @@ import util.UserProfileApi;
 public class CreateUserProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "CreateUserProfileActivity";
+    public static final int REQUEST_IMAGE_CAPTURE = 2;
+    public static final int GALLERY_CODE = 1;
     private TextView addProfilePhotoTextView;
     private LatLng userLocation;
     private EditText heightEditText,
@@ -74,17 +77,20 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
     private Spinner userHandSpinner;
     private Spinner userClubSpinner;
     private ProgressBar profileCreationProgressBar;
+    private SwitchCompat ghostSwitch;
 
     ArrayAdapter<CharSequence> sexSpinnerAdapter;
     ArrayAdapter<CharSequence> weightClassSpinnerAdapter;
     ArrayAdapter<CharSequence> handSpinnerAdapter;
     ArrayAdapter<CharSequence> clubSpinnerAdapter;
 
-    public static final int GALLERY_CODE = 1;
+
     private Uri imageUri;
 
     private String currentUserId;
     private String currentUserName;
+    private boolean cameraPicked = false;
+    private boolean galleryPicked = false;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -118,6 +124,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         profileCreationProgressBar = findViewById(R.id.profile_creation_progress_bar);
         Button saveButton = findViewById(R.id.create_acc_save_button);
         profilePictureButton = findViewById(R.id.profile_picture_button);
+        ghostSwitch = findViewById(R.id.ghost_switch);
 
         profilePictureButton.setOnClickListener(this);
         saveButton.setOnClickListener(this);
@@ -193,9 +200,21 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.profile_picture_button:
-                Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                galleryIntent.setType("image/*");
-                startActivityForResult(galleryIntent, GALLERY_CODE);
+                AlertDialog.Builder cameraAlert = new AlertDialog.Builder(this);
+                cameraAlert.setTitle("Pick a profile photo");
+                cameraAlert.setIcon(R.drawable.camera);
+                cameraAlert.setPositiveButton("CAMERA",
+                        (dialog, which) -> {
+                    dispatchTakePictureIntent();
+                    cameraPicked = true;
+                });
+                cameraAlert.setNegativeButton("GALLERY",
+                        (dialog, which) -> {
+                    dispatchGalleryIntent();
+                    galleryPicked = true;
+                    dialog.cancel();
+                });
+                cameraAlert.show();
                 break;
             case R.id.create_acc_save_button:
                 try {
@@ -208,8 +227,28 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
     }
 
     /**
-     *
-     * @throws IOException
+     * Dispatches a camera intent, retrieves image from users phones camera
+     */
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    /**
+     * Dispatches a gallery intent, retrieves image from users phones gallery
+     */
+    private void dispatchGalleryIntent(){
+        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent, GALLERY_CODE);
+    }
+
+    /**
+     * saveProfile - saves the user profile in the firebase database
+     * This method also compresses the profile picture size before upload
+     * @throws IOException exception to be thrown if bitmap retrieval fails
      */
     private void saveProfile() throws IOException {
         final String userBio = userBioEditText.getText().toString().trim();
@@ -235,10 +274,12 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
 
             final StorageReference filepath = storageReference
                     .child("profile_picture_" + Timestamp.now().getSeconds());
+            //compress image give uri
             Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.JPEG, 25, baos);
             byte[] data = baos.toByteArray();
+
             final UploadTask uploadTask = filepath.putBytes(data);
             uploadTask.addOnSuccessListener(taskSnapshot -> uploadTask.continueWithTask(task -> {
                 if (!task.isSuccessful()) {
@@ -264,6 +305,11 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                     userProfile.setUserId(currentUserId);
                     userProfile.setHand(userHand);
                     userProfile.setClub(userClub);
+                    if(ghostSwitch.isChecked()){
+                        userProfile.setGhost(true);
+                    }else{
+                        userProfile.setGhost(false);
+                    }
 
                     collectionReference.document(
                             user.getUid())
@@ -292,21 +338,21 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
     }
 
     /**
-     *
-     * @param userBio
-     * @param userSex
-     * @param userHeight
-     * @param userForearmSize
-     * @param userBicepSize
-     * @param userWeightClass
-     * @param homeTown
-     * @param imageUri
-     * @param userHand
-     * @param userClub
+     * warnUserOfEmptyFields - warns the user whenever they have left a required field empty.
+     * @param imageUri user profile picture, required to make profile
+     * @param userBio user bio, required to make profile
+     * @param userSex user sex, required to make profile
+     * @param userHeight user height, required to make profile
+     * @param userForearmSize user forearm size, required to make profile
+     * @param userBicepSize user bicep size, required to make profile
+     * @param userWeightClass weight class, required to make profile
+     * @param homeTown user hometown, required to make profile
+     * @param userHand user hands used, required to make profile
+     * @param userClub user club, required to make profile (none is ok)
      */
     private void warnUserOfEmptyFields(String userBio, String userSex, String userHeight,
-                                  String userForearmSize, String userBicepSize,
-                                  String userWeightClass, String homeTown, Uri imageUri,
+                                       String userForearmSize, String userBicepSize,
+                                       String userWeightClass, String homeTown, Uri imageUri,
                                        String userHand, String userClub){
         String required = "Required field";
         if(TextUtils.isEmpty(userBio)){
@@ -316,7 +362,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
             TextView sexErrorText = (TextView)userSexSpinner.getSelectedView();
             sexErrorText.setError("");
             sexErrorText.setTextColor(Color.RED);
-            sexErrorText.setText("Please choose gender!");
+            sexErrorText.setText(required);
         }
         if(TextUtils.isEmpty(userHeight)){
             heightEditText.setError(required);
@@ -331,7 +377,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
             TextView weightErrorText = (TextView)weightClassSpinner.getSelectedView();
             weightErrorText.setError("");
             weightErrorText.setTextColor(Color.RED);
-            weightErrorText.setText("Please choose a weight class!");
+            weightErrorText.setText(required);
         }
         if(homeTown == null){
             Toast.makeText(this, "Please enter your hometown!", Toast.LENGTH_SHORT).show();
@@ -343,18 +389,20 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
             TextView handErrorText = (TextView)userHandSpinner.getSelectedView();
             handErrorText.setError("");
             handErrorText.setTextColor(Color.RED);
-            handErrorText.setText("Please choose a hand!");
+            handErrorText.setText(required);
         }
         if(TextUtils.isEmpty(userClub)){
             TextView clubErrorText = (TextView)userClubSpinner.getSelectedView();
             clubErrorText.setError("");
             clubErrorText.setTextColor(Color.RED);
-            clubErrorText.setText("Please choose a club!");
+            clubErrorText.setText(required);
         }
     }
 
     /**
-     *
+     * Starts an animation of the progress bar so that it takes a few seconds before
+     * changing activities, this to prevent activities changing before everything has
+     * successfully uploaded to the database. (profile photo etc)
      */
     private void prolongProgressbarAnimation(){
         ObjectAnimator animation = ObjectAnimator.ofInt(profileCreationProgressBar,
@@ -379,24 +427,44 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
     }
 
     /**
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     *  onActivityResult - Retrieve photo taken by user if user picks to take profile
+     *  photo with camera, otherwise retrieve the photo chosen from gallery
+     * @param requestCode code returned specifically for chosen intent
+     * @param resultCode 1 if successful
+     * @param data the data retrieved from the chosen intent
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == GALLERY_CODE && resultCode == RESULT_OK && data != null){
-            imageUri = data.getData();
-            profilePictureButton.setBackground(null);
-            addProfilePhotoTextView.setText(null);
-            profilePictureButton.setImageURI(imageUri);
+        if(cameraPicked){
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+                assert data != null;
+                Bundle extras = data.getExtras();
+                assert extras != null;
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                assert imageBitmap != null;
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, "Title", null);
+                imageUri = Uri.parse(path);
+                profilePictureButton.setBackground(null);
+                addProfilePhotoTextView.setText(null);
+                profilePictureButton.setImageURI(imageUri);
+                cameraPicked = false;
+            }
+        }else if(galleryPicked){
+            if(requestCode == GALLERY_CODE && resultCode == RESULT_OK && data != null){
+                imageUri = data.getData();
+                profilePictureButton.setBackground(null);
+                addProfilePhotoTextView.setText(null);
+                profilePictureButton.setImageURI(imageUri);
+                galleryPicked = false;
+            }
         }
     }
 
     /**
-     *
+     * Check to see if the user is logged in
      */
     @Override
     protected void onStart() {
@@ -406,7 +474,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
     }
 
     /**
-     *
+     * Remove authentication listener to not drain battery
      */
     @Override
     protected void onStop() {

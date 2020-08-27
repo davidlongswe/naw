@@ -221,7 +221,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                                         } else {
                                             Bitmap croppedBitmap = getCroppedBitmap(bitmap);
                                             profilePictures.add(croppedBitmap);
-                                            users.add(userProfile);
+                                            if(!userProfile.isGhost()){
+                                                users.add(userProfile);
+                                            }
                                         }
                                     }
                                     @Override
@@ -295,7 +297,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 Double userLatitude = users.get(i).getUserLatLng().getLatitude();
                 Double userLongitude = users.get(i).getUserLatLng().getLongitude();
                 LatLng userLatLng = new LatLng(userLongitude, userLatitude);
-
                 mMap.addMarker(new MarkerOptions()
                         .position(userLatLng)
                         .icon(BitmapDescriptorFactory.fromBitmap(profilePictures.get(i)))
@@ -359,7 +360,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
+     * Redirects the user to the homepage of the clicked arm wrestling club if clubs are showing,
+     * otherwise the user will be shown the users profile
      * @param marker
      */
     @Override
@@ -379,7 +381,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
+     * Starts the autocomplete intent, and searches for places in nordic countries
      */
     private void search(){
         List<Place.Field> fields = Arrays.asList(
@@ -388,7 +390,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                 Place.Field.ADDRESS,
                 Place.Field.LAT_LNG);
         List<String> countries = Arrays.asList("SE", "DK", "NO", "FI", "IS");
-        // Start the autocomplete intent.
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.FULLSCREEN, fields)
                 .setCountries(countries)
@@ -396,12 +397,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
     }
 
-    /**
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -461,10 +456,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     *
-     * @param v
-     */
     @Override
     public void onClick(View v) {
         switch(v.getId()) {

@@ -24,6 +24,7 @@ public class UserProfile {
     private String bio;
     private String hand;
     private String club;
+    private boolean ghost;
 
     public UserProfile() {
     }
@@ -44,12 +45,13 @@ public class UserProfile {
      * @param bio the users bio
      * @param hand the users hands
      * @param club the users arm wrestling club
+     * @param ghost if the user should be shown on the map or not
      */
     public UserProfile(String profilePictureUrl, String userId, Timestamp lastUpdated,
                        String height, String userName, String sex,
                        String weightClass, String forearmSize, String bicepSize,
                        String homeTown, util.LatLng userLatLng, String bio,
-                       String hand, String club) {
+                       String hand, String club, boolean ghost) {
         this.profilePictureUrl = profilePictureUrl;
         this.userId = userId;
         this.lastUpdated = lastUpdated;
@@ -64,6 +66,15 @@ public class UserProfile {
         this.bio = bio;
         this.hand = hand;
         this.club = club;
+        this.ghost = ghost;
+    }
+
+    public boolean isGhost() {
+        return ghost;
+    }
+
+    public void setGhost(boolean ghost) {
+        this.ghost = ghost;
     }
 
     public String getHand() {

@@ -159,4 +159,7 @@
     <string name="here">here</string>
     <string name="hometown_create_prof">Hometown:</string>
     <string name="chat_default_hint">Aa</string>
+    <string name="Ghost">Ghost mode:</string>
+    <string name="off">OFF</string>
+    <string name="on">ON</string>
 </resources>
