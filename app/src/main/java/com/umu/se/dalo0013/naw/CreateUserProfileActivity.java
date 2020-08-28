@@ -1,9 +1,5 @@
 package com.umu.se.dalo0013.naw;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
@@ -25,6 +21,10 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
@@ -112,7 +112,7 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
         storageReference = FirebaseStorage.getInstance().getReference();
 
         // Initialize the SDK
-        Places.initialize(getApplicationContext(), Config.PLACES_API_KEY);
+        Places.initialize(getApplicationContext(), Config.DEBUG_PLACES_API_KEY);
 
         userBioEditText = findViewById(R.id.user_bio_profile_create);
         //view elements
@@ -459,8 +459,8 @@ public class CreateUserProfileActivity extends AppCompatActivity implements View
                 addProfilePhotoTextView.setText(null);
                 profilePictureButton.setImageURI(imageUri);
                 galleryPicked = false;
+                }
             }
-        }
     }
 
     /**

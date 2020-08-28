@@ -22,9 +22,8 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 /**
- *
- *
- *
+ * HomePageActivity - The first activity a user is brought to after log in. Displays
+ * videos, youtube channels, and direct links to the FindPartnerActivity.
  * @author  David Elfving Long
  * @version 1.0
  * @since   2020-08-27
@@ -87,7 +86,7 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
     }
 
     /**
-     *
+     * Sets up the recycler view for popular youtube videos
      */
     private void setUpPopularVideoRecyclerView() {
         RecyclerView popVidsRecyclerView = findViewById(R.id.popular_videos_recycler_view);
@@ -100,7 +99,7 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
     }
 
     /**
-     *
+     * Sets up the recycler view for the tutorial youtube videos
      */
     private void setUpTutorialVideoRecyclerView() {
         RecyclerView tutVidsRecyclerView = findViewById(R.id.tutorial_videos_recycler_view);
@@ -151,8 +150,9 @@ public class HomePageActivity extends AppCompatActivity implements View.OnClickL
     }
 
     /**
-     *
-     * @param v
+     * onClick - Decides what happens when a user clicks all of the clickable buttons in this
+     * activities view.
+     * @param v the view clicked
      */
     @Override
     public void onClick(View v) {

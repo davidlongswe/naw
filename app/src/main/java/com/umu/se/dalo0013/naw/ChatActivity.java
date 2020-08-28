@@ -33,16 +33,15 @@ import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import util.UserProfileApi;
 /**
- *
- *
- *
+ * ChatActivity - allows a user to chat with another user (One to one communication). In
+ * version 1.0 of the app the messages aren't encrypted, but this will be changed in
+ * a later stage.
  * @author  David Elfving Long
  * @version 1.0
  * @since   2020-08-27
  */
 public class ChatActivity extends AppCompatActivity {
 
-    private static final String TAG = "ChatActivity";
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
@@ -109,8 +108,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param contactId
+     * generateUniqueKey - generates a unique key by appending the contact users UID with
+     * the current users UID
+     * @param contactId the contacts UID
      */
     private void generateUniqueKey(String contactId) {
         assert contactId != null;
@@ -130,8 +130,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param v
+     * subMessageAndUpdateFireStore - Creates a unique key for each message with push() and appends
+     * the chat message information to the child of that key.
+     * @param v the submit button view
      */
     private void submitMessageAndUpdateFireStore(View v) {
         v.startAnimation(AnimationUtils.loadAnimation(ChatActivity.this, R.anim.image_on_click_animation));
@@ -153,7 +154,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * Sets up the chat recycler view
      */
     private void setUpChatRecyclerView() {
         chatMessageRecyclerView = findViewById(R.id.chat_recycler_view);
@@ -165,7 +166,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * Updates the chatMessageRecycler view every time a new message is added to the database.
      * @param snapshot
      */
     private void appendConversation(DataSnapshot snapshot) {

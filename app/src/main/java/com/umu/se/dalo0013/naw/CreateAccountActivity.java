@@ -25,9 +25,7 @@ import java.util.Objects;
 
 import util.UserProfileApi;
 /**
- *
- *
- *
+ * CreateAccountActivity - creates a user account
  * @author  David Elfving Long
  * @version 1.0
  * @since   2020-08-27
@@ -38,9 +36,9 @@ public class CreateAccountActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser currentUser;
 
-    //Firesotre connection
+    //Firestore connection
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+    //Gets users
     private CollectionReference collectionReference = db.collection("Users");
 
     private EditText emailEditText;
@@ -87,7 +85,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * createUserEmailAccount - Creates a new account with email and password
      * @param username
      * @param email
      * @param password
@@ -110,7 +108,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                             userObj.put("userId", currentUserId);
                             userObj.put("username", username);
 
-                            //save to our firestore database
+                            //save to our FireStore database
                             collectionReference.add(userObj).addOnSuccessListener(documentReference -> documentReference.get().addOnCompleteListener(task1 -> {
                                 if (Objects.requireNonNull(task1.getResult()).exists()){
                                     progressBar.setVisibility(View.INVISIBLE);

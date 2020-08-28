@@ -20,8 +20,8 @@ import com.umu.se.dalo0013.naw.R;
 
 import util.Config;
 /**
- *
- *
+ * YouTubeVideoRecyclerAdapter is a custom recyclerAdapter which holds a youtube player from
+ * the YouTubeAndroidPlayer API
  * @author  David Elfving Long
  * @version 1.0
  * @since   2020-08-27
@@ -31,7 +31,8 @@ public class YouTubeVideoRecyclerAdapter extends RecyclerView.Adapter<YouTubeVid
     private String[] videoURL;
 
     Context ctx;
-    private static String KEY = Config.YOUTUBE_API_KEY;
+    //Youtube api key
+    private static String KEY = Config.DEBUG_YT_API_KEY;
 
     public YouTubeVideoRecyclerAdapter(Context context, String[] videoURL) {
         this.ctx = context;
@@ -71,6 +72,10 @@ public class YouTubeVideoRecyclerAdapter extends RecyclerView.Adapter<YouTubeVid
         });
     }
 
+    /**
+     * getItemCount - returns the length of the videoURL list
+     * @return length of the videoURL list
+     */
     @Override
     public int getItemCount() {
         return videoURL.length;

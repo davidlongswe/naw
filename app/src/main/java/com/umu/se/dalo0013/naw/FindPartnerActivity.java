@@ -73,15 +73,15 @@ import java.util.Objects;
 import util.Config;
 import util.UserProfileApi;
 /**
- *
- *
+ * FindPartnerActivity - the map activity which allows users to see other users,
+ * given that their ghost mode is switched off in their user profile.
  *
  * @author  David Elfving Long
  * @version 1.0
  * @since   2020-08-27
  */
 public class FindPartnerActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, View.OnClickListener {
+GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, View.OnClickListener {
 
     public static final String TAG = "FindPartnerActivity";
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -102,6 +102,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     private boolean usersButtonPressed = false;
     private boolean usersShowing = false;
 
+    Button searchButton, clubButton, userButton;
     private ProgressBar loadingBar;
 
     @Override
@@ -112,7 +113,7 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
 
-        Places.initialize(getApplicationContext(), Config.PLACES_API_KEY);
+        Places.initialize(getApplicationContext(), Config.DEBUG_PLACES_API_KEY);
         PlacesClient placesClient = Places.createClient(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -121,9 +122,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        Button clubButton = findViewById(R.id.club_map_button);
-        Button searchButton = findViewById(R.id.search_map_button);
-        Button userButton = findViewById(R.id.user_map_button);
+        clubButton = findViewById(R.id.club_map_button);
+        searchButton = findViewById(R.id.search_map_button);
+        userButton = findViewById(R.id.user_map_button);
         loadingBar = findViewById(R.id.images_loading_progress_bar);
 
         clubButton.setOnClickListener(this);
@@ -132,9 +133,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
-     * @return
-     */
+    * Parses a json file and returns it as a string
+    * @return
+    */
     private String loadJSONFromRaw() {
         String json;
         try {
@@ -152,8 +153,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
-     */
+    * Gets arm wrestling clubs from JSON file and stores them in an ArrayList
+    */
     private void getArmWrestlingClubs() {
         armWrestlingClubs = new ArrayList<>();
         try {
@@ -175,8 +176,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
-     */
+    * Places the arm wrestling clubs on the map that are stored in the club array list
+    */
     private void toggleArmWrestlingClubs() {
         if(clubButtonPressed && !clubsShowing) {
             mMap.setInfoWindowAdapter(new ClubCustomInfoWindow(this));
@@ -199,8 +200,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
-     */
+    * Gets users from firebase and creates a list, also retrieves their profile picture URL's
+     * TODO: sometimes this bugs out and all of the user images aren't shown until an activity refresh?
+    */
     private void getUsers(){
         users = new ArrayList<>();
         profilePictures = new ArrayList<>();
@@ -231,7 +233,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                                         Toast.makeText(FindPartnerActivity.this,
                                                 "FAILED" +e.getMessage() , Toast.LENGTH_SHORT).show();
                                     }
-
                                     @Override
                                     public void onPrepareLoad(Drawable placeHolderDrawable) {
                                         Log.i(TAG, "Prepare");
@@ -241,7 +242,6 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
                                         .resize(120, 120).into(mTarget);
                                 imagesLoading(false);
                             }
-
                             @Override
                             public void onError(Exception e) {
                                 Log.d(TAG, "onError: " + e.getMessage());
@@ -252,9 +252,9 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
-     * @param loading
-     */
+    * imagesLoading - sets the visibility of the progressbar depending on the boolean value loading
+    * @param loading boolean value which is true if images are loading, false otherwise
+    */
     public void imagesLoading(boolean loading){
         if(loading){
             loadingBar.setVisibility(View.VISIBLE);
@@ -264,10 +264,10 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
-     * @param bitmap
-     * @return
-     */
+    * Crops a bitmap into a circle and returns the result
+    * @param bitmap the provided bitmap
+    * @return output - the cropped bitmap
+    */
     public Bitmap getCroppedBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
                 bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -288,8 +288,10 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
-     */
+    * Gets the users and adds them on the map, each user is put into the markers tag,
+     * the information passed along in said tag is used to customise the info window with
+     * the users information
+    */
     private void toggleUsersShown() {
         if (usersButtonPressed && !usersShowing) {
             mMap.setInfoWindowAdapter(new UserCustomInfoWindow(this));
@@ -311,14 +313,14 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    * Manipulates the map once available.
+    * This callback is triggered when the map is ready to be used.
+    * This is where we can add markers or lines, add listeners or move the camera. In this case,
+    * we just add a marker near Sydney, Australia.
+    * If Google Play services is not installed on the device, the user will be prompted to install
+    * it inside the SupportMapFragment. This method will only be triggered once the user has
+    * installed Google Play services and returned to the app.
+    */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -337,33 +339,34 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     *
-     */
+    * Gets users and their profile pictures on start
+    */
     @Override
     protected void onStart(){
-        super.onStart();
-        getUsers();
-        getArmWrestlingClubs();
+    super.onStart();
+    getUsers();
+    getArmWrestlingClubs();
     }
 
     /**
-     *
-     * @param marker
-     * @return
-     */
+    * Starts a handler which delays opening of an info window by a little, so that the
+     * profile image has time to load
+    * @param marker
+    * @return
+    */
     @Override
     public boolean onMarkerClick(final Marker marker) {
         marker.showInfoWindow();
         Handler handler = new Handler();
-        handler.postDelayed(marker::showInfoWindow, 200);
-       return false;
+        handler.postDelayed(marker::showInfoWindow, 300);
+        return false;
     }
 
     /**
-     * Redirects the user to the homepage of the clicked arm wrestling club if clubs are showing,
-     * otherwise the user will be shown the users profile
-     * @param marker
-     */
+    * Redirects the user to the homepage of the clicked arm wrestling club if clubs are showing,
+    * otherwise the user will be shown the users profile
+    * @param marker
+    */
     @Override
     public void onInfoWindowClick(Marker marker) {
         if((clubsShowing && !usersShowing)){
@@ -381,8 +384,8 @@ public class FindPartnerActivity extends AppCompatActivity implements OnMapReady
     }
 
     /**
-     * Starts the autocomplete intent, and searches for places in nordic countries
-     */
+    * Starts the autocomplete intent, and searches for places in nordic countries
+    */
     private void search(){
         List<Place.Field> fields = Arrays.asList(
                 Place.Field.ID,

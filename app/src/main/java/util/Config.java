@@ -10,7 +10,10 @@ public class Config {
     public Config(){
 
     }
-    public static final String YOUTUBE_API_KEY = "AIzaSyBt1XVOZbGPRZTVAgz5SshUDOmtvH7RtPc";
-    public static final String PLACES_API_KEY = "AIzaSyBWbCiPv4T6jCxqnAS5VAqPjfZ8XyVsn3I";
+    public static final String DEBUG_YT_API_KEY = "AIzaSyBWbCiPv4T6jCxqnAS5VAqPjfZ8XyVsn3I";
+    public static final String DEBUG_PLACES_API_KEY = "AIzaSyBWbCiPv4T6jCxqnAS5VAqPjfZ8XyVsn3I";
+
+    public static final String RELEASE_YT_API_KEY = "AIzaSyAV5YM86btKdPsMEevXii-OJEJNxzniWfo";
+    public static final String RELEASE_PLACE_API_KEY = "AIzaSyAV5YM86btKdPsMEevXii-OJEJNxzniWfo";
 
 }

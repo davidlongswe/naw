@@ -25,9 +25,7 @@ import java.util.Objects;
 
 import util.UserProfileApi;
 /**
- *
- *
- *
+ * LogInActivity - the log in activity for existing users
  * @author  David Elfving Long
  * @version 1.0
  * @since   2020-08-27
@@ -68,9 +66,9 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param email
-     * @param password
+     * Creates a new account with the given user email and user password.
+     * @param email the users email
+     * @param password the users password
      */
     private void loginEmailPasswordUser(final String email, final String password) {
         progressbarLogIn.setVisibility(View.VISIBLE);
